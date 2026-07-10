@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Host: lookoutldz.top
+Sitemap: https://lookoutldz.top/sitemap.xml
