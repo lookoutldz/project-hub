@@ -1,10 +1,10 @@
-# LOOKO OS - 个人导航主页
+# LOOKO Terminal - 个人导航主页
 
 ## 1. 项目简介
 
-LOOKO OS 是一个纯前端的个人导航主页。
+LOOKO Terminal 是一个纯前端的个人导航主页。
 
-它不是传统的网址导航，而是一个模拟终端（Terminal）的个人操作系统（Personal OS），作为所有个人项目的统一入口。
+它不是传统的网址导航，而是一个模拟终端（Terminal），作为所有个人项目的统一入口。
 
 设计目标：
 
@@ -80,27 +80,19 @@ looko@home:~$
 采用单 Terminal 布局。
 
 ```text
-+------------------------------------------------------+
-| LOOKO OS                                             |
-|------------------------------------------------------|
-| Version 1.0                                          |
-| Initializing...                                      |
-| Ready.                                               |
-| Type "help" to begin.                               |
-|                                                      |
-| looko@home:~$ ls                                     |
-|                                                      |
-| Projects                                             |
-| moss                                                 |
-| arkvoice                                             |
-| steamtower                                           |
-|                                                      |
-| Links                                                |
-| github                                               |
-| blog                                                 |
-|                                                      |
-| looko@home:~$                                        |
-+------------------------------------------------------+
++-------------------------------------------------------------+
+| LOOKO Terminal Version 1.0                                  |
+| Initializing...                                             |
+| Ready.                                                      |
+|                                                             |
+| PROJECTS                                                    |
+|   🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower    |
+|   🌏 4. GitHub       🌏 5. BLOG                             |
+|                                                             |
+| Type "help" to begin.                                       |
+|                                                             |
+| looko@home:~$ 🁢                                             |
++-------------------------------------------------------------+
 ```
 
 整个页面只有一个终端窗口：
@@ -117,22 +109,6 @@ looko@home:~$
 
 ---
 
-手机端仍然保持单 Terminal：
-
-```text
-LOOKO OS
-
-looko@home:~$
-
-Projects
-
-moss
-arkvoice
-steamtower
-```
-
----
-
 # 5. Terminal
 
 Terminal 是整个网站本身。
@@ -140,17 +116,19 @@ Terminal 是整个网站本身。
 启动时：
 
 ```text
-LOOKO OS
-
-Version 1.0
-
-Initializing...
-
-Ready.
-
-Type "help" to begin.
-
-looko@home:~$
++-------------------------------------------------------------+
+| LOOKO Terminal Version 1.0                                  |
+| Initializing...                                             |
+| Ready.                                                      |
+|                                                             |
+| PROJECTS                                                    |
+|   🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower    |
+|   🌏 4. GitHub       🌏 5. BLOG                             |
+|                                                             |
+| Type "help" to begin.                                       |
+|                                                             |
+| looko@home:~$ 🁢                                             |
++-------------------------------------------------------------+
 ```
 
 随后等待用户输入。
@@ -188,16 +166,9 @@ clear
 列出所有项目。
 
 ```text
-Projects
-
-moss
-arkvoice
-steamtower
-
-Links
-
-github
-blog
+PROJECTS                                             
+  🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower     
+  🌏 4. GitHub       🌏 5. BLOG                            
 ```
 
 ---
@@ -210,6 +181,12 @@ blog
 
 ```text
 open moss
+```
+
+或者序号
+
+```text
+open 1
 ```
 
 输出：
@@ -232,6 +209,16 @@ open steamtower
 open github
 
 open blog
+
+open 1
+
+open 2
+
+open 3
+
+open 4
+
+open 5
 ```
 
 ---
@@ -256,29 +243,6 @@ Building useful things.
 
 清空终端。
 
----
-
-# 7. 快捷键
-
-支持：
-
-## Tab
-
-命令补全。
-
-例如：
-
-```text
-open m
-```
-
-按 Tab：
-
-```text
-open moss
-```
-
----
 
 ## ↑ ↓
 
@@ -288,26 +252,15 @@ open moss
 
 ---
 
-## Ctrl + L
-
-清屏。
-
-等同：
-
-```text
-clear
-```
-
----
-
 # 8. 终端内点击导航
 
 项目列表可以在终端输出中直接点击。
 
-例如执行：
+例如：
 
 ```text
-ls
+  🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower     
+  🌏 4. GitHub       🌏 5. BLOG      
 ```
 
 输出中的项目名或链接名可点击，点击后直接跳转。
@@ -362,23 +315,29 @@ Looko
 输出：
 
 ```text
-LOOKO OS
-
-Projects
-
-Moss
-ArkVoice
-SteamTower
-
-Languages
-
-Kotlin
-Java
-
-Frameworks
-
-Spring Boot
-Godot
+              _,,>#b&HMHd&&bb>\_                    looko@home
+          _oHMMMMMMMMMMMMMMMMH**H:.                 ------------
+        oHMMMMMMMMMMMMMMMMMMMM#v`?  `.              OS: macOS Tahoe 26.5.2 (25F84) arm64
+     .dMMMMMMMMMMMMMMMMMMMMMMH*`+|     .            Host: MacBook Pro (14-inch, 2021)
+    ,MMMMMMMMMMMMMMMMMMMMMb|?+.,H       -.          Kernel: Darwin 25.5.0
+   ddHMMMMMMMMMMMMMMMMMMMMMb  `'          .         Uptime: 5 days, 21 hours, 23 mins
+  HMMkZ**HMMMMMMMMMMMMMMMMH\  -   .        :        Packages: 118 (brew), 53 (brew-cask)
+ dTMMM*  `9MMMP'"*MMMMPT"` ..               :       Shell: Looko-Shell 5.9
+|M6H''    4MP'   `"HMMM|   !|.      .        .      Display (Color LCD): 2294x1490 @ 2x in 14", 120 Hz [Built-in]
+1MHp'      #L      $ *"'  .-:&.              .      WM: Quartz Compositor 1.600.0
+MMM'        "     q:H.  .o#-``'              :      WM Theme: Multicolor (Light)
+MM'                ?H?.|MMH::::-o,_.         -      Theme: Liquid Glass
+M[                  `*?:::'|` `"`:9MH\~-.    `      Font: .AppleSystemUIFont [System], Helvetica [User]
+&M.                     ""'`'^'.:.`?'`. '|  -:      Cursor: Fill - Black, Outline - White (32px)
+`M|d,                       .dbHM[.1?     .. :      Terminal: iTerm 3.6.11
+ 9||| .                  _obMMMMMMMMH,   .  :       Terminal Font: HackNF-Regular (12pt)
+  H.^                    MMMMMMMMMMMM}     -        CPU: Apple M1 Max (8+2) @ 3.23 GHz
+   \                     |MMH#*HMMMMH'    .'        GPU: Apple M1 Max (32) @ 1.30 GHz [Integrated]
+    .                    `      `#*'   ,:-          Memory: 49.67 GiB / 64.00 GiB (78%)
+     `                           '' .-'.            Swap: Unused
+       `.                           .-              Disk (/): 768.88 GiB / 926.35 GiB (83%) - apfs [Read-only]
+          '- .                   .-`                Battery (bq40z651): 80% [AC Connected]
+              '`\bqHMMMMMMHHb--`                    Locale: zh_CN.UTF-8
 ```
 
 ---
@@ -513,7 +472,7 @@ JavaScript：
 
 # 15. 核心理念
 
-LOOKO OS 并不是“一个页面里放了一个终端组件”。
+LOOKO Terminal 并不是“一个页面里放了一个终端组件”。
 
 它本身就应该像一整个 Terminal。
 
