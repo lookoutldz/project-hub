@@ -194,6 +194,10 @@ body::before {
   margin: 0 0 12px;
 }
 
+.terminal-group--projects {
+  margin: 12px 0 16px;
+}
+
 .terminal-line {
   display: block;
   color: var(--text);
@@ -231,7 +235,8 @@ body::before {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
-  margin: 2px 0 0;
+  margin: 10px 0 8px;
+  padding-left: 1.5ch;
 }
 
 .terminal-link {

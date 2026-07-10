@@ -68,7 +68,7 @@ LOOKO Terminal 是一个纯前端的个人导航主页。
 ```text
 LOOKO OS
 
-Type "help" to begin.
+Type "help" for help.
 
 looko@home:~$
 ```
@@ -89,7 +89,7 @@ looko@home:~$
 |   🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower    |
 |   🌏 4. GitHub       🌏 5. BLOG                             |
 |                                                             |
-| Type "help" to begin.                                       |
+| Type "help" for help.                                       |
 |                                                             |
 | looko@home:~$ 🁢                                             |
 +-------------------------------------------------------------+
@@ -125,7 +125,7 @@ Terminal 是整个网站本身。
 |   🌿 1. The Moss     🎵 2. arkvoice     🎮 3. steamtower    |
 |   🌏 4. GitHub       🌏 5. BLOG                             |
 |                                                             |
-| Type "help" to begin.                                       |
+| Type "help" for help.                                       |
 |                                                             |
 | looko@home:~$ 🁢                                             |
 +-------------------------------------------------------------+

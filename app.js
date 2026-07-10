@@ -183,7 +183,7 @@ const appendCommandEcho = (input) => {
 
 const appendProjectsBlock = (title = "PROJECTS") => {
   const group = document.createElement("div");
-  group.className = "terminal-group";
+  group.className = "terminal-group terminal-group--projects";
 
   const heading = createLine(title, "heading");
   const projects = document.createElement("div");
@@ -230,7 +230,7 @@ const resetPrompt = () => {
 
 const printWelcome = () => {
   appendProjectsBlock();
-  appendLines(['Type "help" to begin.']);
+  appendLines(['Type "help" for help.']);
 };
 
 const completeInput = () => {
