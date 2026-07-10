@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>LOOKO Terminal</title>
+    <meta
+      name="description"
+      content="LOOKO Terminal 是一个以复古终端为核心的个人导航主页。"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="workspace">
+      <section
+        class="terminal-shell"
+        aria-label="LOOKO Terminal"
+      >
+        <div class="terminal-frame">
+          <header class="terminal-topbar">
+            <div class="terminal-topbar__lights" aria-hidden="true">
+              <span class="terminal-topbar__light terminal-topbar__light--red"></span>
+              <span class="terminal-topbar__light terminal-topbar__light--yellow"></span>
+              <span class="terminal-topbar__light terminal-topbar__light--green"></span>
+            </div>
+            <div class="terminal-topbar__title">LOOKO Terminal</div>
+          </header>
+
+          <div class="terminal-screen">
+            <div class="terminal-noise" aria-hidden="true"></div>
+            <div class="terminal-scanlines" aria-hidden="true"></div>
+
+            <div class="terminal-viewport" id="terminalViewport">
+              <div class="terminal-history" id="terminalHistory"></div>
+
+              <form class="prompt-row" id="promptForm" autocomplete="off">
+                <label class="prompt-label" for="terminalInput">
+                  <span class="prompt-label__user">looko</span><span>@</span><span class="prompt-label__host">home</span><span>:~$</span>
+                </label>
+                <div class="prompt-field">
+                  <input
+                    id="terminalInput"
+                    class="prompt-input"
+                    type="text"
+                    autocapitalize="off"
+                    autocomplete="off"
+                    autocorrect="off"
+                    spellcheck="false"
+                    aria-label="Terminal input"
+                  />
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
