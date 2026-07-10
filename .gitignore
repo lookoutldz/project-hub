@@ -1,0 +1,51 @@
+# AI tooling
+.agents/
+skills-lock.json
+.trae/
+.cursor/
+.windsurf/
+.roo/
+.codeium/
+.copilot/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+.cache/
+.turbo/
+
+# Frontend frameworks
+.next/
+.nuxt/
+.svelte-kit/
+.parcel-cache/
+.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
