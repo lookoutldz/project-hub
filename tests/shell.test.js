@@ -49,7 +49,7 @@ test("unique command prefix completes with a trailing space", () => {
 test("ambiguous command prefix lists candidates", () => {
   const { value, candidates } = complete("h", COMMANDS);
   assert.equal(value, "h");
-  assert.deepEqual(candidates, ["help", "history"]);
+  assert.deepEqual(candidates, ["help", "history", "home"]);
 });
 
 test("open completes project names and aliases", () => {

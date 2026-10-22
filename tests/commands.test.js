@@ -16,6 +16,7 @@ const createCtx = (overrides = {}) => {
     images: [],
     navigated: [],
     cleared: 0,
+    homed: 0,
     rebooted: 0,
     theme: "amber",
     frames: [],
@@ -75,6 +76,9 @@ const createCtx = (overrides = {}) => {
     },
     navigate: async (project) => {
       calls.navigated.push(project.name);
+    },
+    home: () => {
+      calls.homed += 1;
     },
     reboot: async () => {
       calls.rebooted += 1;
@@ -265,7 +269,7 @@ test("man documents public commands only", async () => {
   assert.equal(empty.text()[0], "What manual page do you want?");
 });
 
-test("history, clear and exit use the terminal context", async () => {
+test("history, clear, home and exit use the terminal context", async () => {
   const history = createCtx();
   await execute(history.ctx, "history");
   assert.deepEqual(history.text(), ["    1  ls", "    2  history"]);
@@ -273,6 +277,11 @@ test("history, clear and exit use the terminal context", async () => {
   const clear = createCtx();
   await execute(clear.ctx, "clear");
   assert.equal(clear.calls.cleared, 1);
+
+  const home = createCtx();
+  await execute(home.ctx, "home");
+  assert.deepEqual(home.text(), []);
+  assert.equal(home.calls.homed, 1);
 
   const exit = createCtx();
   await execute(exit.ctx, "exit");

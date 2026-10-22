@@ -198,6 +198,11 @@ const ctx = {
     window.location.assign(project.url);
     statusTimer = window.setTimeout(resetStatus, STATUS_RESET_DELAY);
   },
+  // The boot screen again, at once: no boot animation, and the running command restores the prompt.
+  home: () => {
+    terminal.clear();
+    printBootScreen();
+  },
   reboot: async () => {
     await wait(400);
     await boot({ animate: !reducedMotion.matches });

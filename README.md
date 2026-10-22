@@ -30,6 +30,7 @@ Looko 的个人导航主页：整个网站就是一块琥珀色的 CRT 终端屏
 | `theme [amber\|green]` | 查看或切换配色 |
 | `man <命令>` | 命令用法 |
 | `clear` | 清屏 |
+| `home` | 回到启动画面（宽屏显示截图卡片） |
 
 另外还藏了一些彩蛋命令，比如 `sl`、`vim`、`fastfetch`、`tree`、`sudo`。完整说明见 [`requirements.md`](requirements.md)。
 

@@ -266,6 +266,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | `theme [amber\|green]` | 查看或切换配色，选择保存在本地 |
 | `man <command>` | 显示命令用法 |
 | `clear` | 清屏 |
+| `home` | 清屏后立即重新显示启动画面（含宽屏截图卡片），不播放逐行动画 |
 
 `open` 的输出示例：
 

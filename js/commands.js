@@ -480,6 +480,12 @@ export const COMMANDS = [
     run: (ctx) => ctx.clear(),
   },
   {
+    name: "home",
+    usage: "home",
+    summary: "back to the home screen",
+    run: (ctx) => ctx.home(),
+  },
+  {
     name: "whoami",
     hidden: true,
     run: (ctx) => ctx.print("looko"),
