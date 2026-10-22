@@ -218,6 +218,61 @@ const sl = async (ctx) => {
   block.remove();
 };
 
+// vim: an alternate screen you can only leave the way vim users eventually learn.
+const VIM_EXITS = new Set([":q", ":q!", ":wq", ":wq!", ":x", ":qa", ":qa!", ":wqa", "ZZ"]);
+const VIM_INTRO = [
+  "VIM - Vi IMproved",
+  "",
+  "version 9.1, LOOKO edition",
+  "",
+  "type  :q<Enter>       to exit",
+  "type  :help<Enter>    for help",
+];
+
+const vimError = (text) => [{ text, tone: "inverse" }];
+
+export const vimMode = {
+  prompt: "",
+  handle: (ctx, line) => {
+    if (VIM_EXITS.has(line)) {
+      ctx.leaveAltScreen();
+      ctx.exitMode();
+      ctx.print(dim("You escaped vim. Not everyone does."));
+      return;
+    }
+    if (line === ":w") {
+      ctx.print(vimError("E32: No file name"));
+    } else if (line === ":help" || line === ":h") {
+      ctx.print(vimError("E149: Sorry, no help for LOOKO Terminal"));
+    } else if (line.startsWith(":")) {
+      ctx.print(vimError(`E492: Not an editor command: ${line.slice(1)}`));
+    } else {
+      ctx.print(dim("type  :q<Enter>  to exit"));
+    }
+  },
+  interrupt: (ctx) => ctx.print("Type  :qa!  and press <Enter> to abandon all changes and exit Vim"),
+};
+
+const center = (text, width) => " ".repeat(Math.max(0, Math.floor((width - text.length) / 2))) + text;
+
+const vim = (ctx, args) => {
+  const { columns, rows } = ctx.env;
+  const [file] = args;
+  ctx.enterAltScreen();
+
+  // Fill the screen with `~` lines, leaving room for the command line (and the file status).
+  const height = Math.max(rows - (file ? 2 : 1), VIM_INTRO.length + 2);
+  const top = Math.floor((height - VIM_INTRO.length) / 2);
+  for (let row = 0; row < height; row += 1) {
+    const text = VIM_INTRO[row - top];
+    ctx.print(text ? [{ text: "~", tone: "dim" }, center(text, columns - 1)] : dim("~"));
+  }
+  if (file) {
+    ctx.print(`"${file}" [New]`);
+  }
+  ctx.enterMode(vimMode);
+};
+
 const changeDirectory = (ctx, args) => {
   const [target] = args;
   if (!target || HOME_PATHS.has(target)) {
@@ -480,6 +535,12 @@ export const COMMANDS = [
     name: "sl",
     hidden: true,
     run: sl,
+  },
+  {
+    name: "vim",
+    aliases: ["vi", "nvim"],
+    hidden: true,
+    run: vim,
   },
   {
     name: "cd",

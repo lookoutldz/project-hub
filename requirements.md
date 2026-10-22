@@ -322,11 +322,22 @@ Building useful things.
 | `uptime` | `HH:MM:SS up <本次会话时长>, 1 user, load average: 0.00, 0.00, 0.00` |
 | `which <命令...>` | 存在的命令输出 `/usr/bin/<命令>`，不存在的输出 `<命令> not found` |
 | `sl` | 敲错 `ls` 的经典惩罚：一列自绘的字符画火车（LOOKO EXPRESS）从右向左驶过整个终端宽度，烟和车轮交替两帧，驶出后消失；与原版一样不能用 Ctrl+C 中断；开启“减少动态效果”时只输出一帧静止画面 |
+| `vim` / `vi` / `nvim` | 进入 vim 模式，见 7.3 |
+
+## 7.3 vim 模式
+
+`vim [文件]` 模拟“退不出 vim”的经典梗：
+
+* 进入备用屏幕（alternate screen）：原有输出暂时隐藏，屏幕被 `~` 行填满，中间显示 `VIM - Vi IMproved` 启动画面；带文件名时最后一行显示 `"<文件>" [New]`；
+* 提示符变为空，用户需要自己输入 `:` 开头的命令；Tab 补全和 ↑↓ 历史不可用，输入的内容不进入 shell 历史；
+* `:q`、`:q!`、`:wq`、`:wq!`、`:x`、`:qa`、`:qa!`、`:wqa`、`ZZ` 退出：恢复进入前的屏幕，并输出 `You escaped vim. Not everyone does.`；
+* 其他输入使用 vim 的真实报错，以反色显示：`:w` → `E32: No file name`，`:help` → `E149: Sorry, no help for LOOKO Terminal`，其他 `:` 命令 → `E492: Not an editor command: <命令>`；不以 `:` 开头的输入提示 `type  :q<Enter>  to exit`；
+* Ctrl+C 输出 vim 的真实提示 `Type  :qa!  and press <Enter> to abandon all changes and exit Vim`，不会退出。
 | `exit` | 输出 `logout`，清屏并重新播放启动过程 |
 
 `fastfetch` 的信息栏包含：OS、Host、Kernel、Shell、Resolution（实际视口尺寸）、Theme、Font、Uptime（本次会话时长）、Routes、Locale（浏览器语言）。
 
-## 7.3 未知命令
+## 7.4 未知命令
 
 ```text
 looko@home:~$ foo

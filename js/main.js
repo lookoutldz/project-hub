@@ -1,7 +1,7 @@
 import { COMMANDS, THEMES, execute } from "./commands.js";
 import { PROJECTS, findProject } from "./projects.js";
 import { commandFromQuery, complete } from "./shell.js";
-import { createTerminal } from "./terminal.js";
+import { PS1, createTerminal } from "./terminal.js";
 
 const BOOT_LINE_DELAY = 120;
 const COMMAND_DELAY = 80;
@@ -54,6 +54,8 @@ const terminal = createTerminal({
 const state = {
   locked: true,
   running: false,
+  // An input mode (e.g. vim) takes over the prompt: { prompt, handle(ctx, line), interrupt(ctx) }.
+  mode: null,
   queue: [],
   history: [],
   historyIndex: 0,
@@ -155,6 +157,16 @@ const ctx = {
   printProjects: (projects) => terminal.printProjects(projects),
   printBlock: (lines) => terminal.printBlock(lines),
   clear: () => terminal.clear(),
+  enterAltScreen: () => terminal.enterAltScreen(),
+  leaveAltScreen: () => terminal.leaveAltScreen(),
+  enterMode: (mode) => {
+    state.mode = mode;
+    terminal.setPs1(mode.prompt);
+  },
+  exitMode: () => {
+    state.mode = null;
+    terminal.setPs1(PS1);
+  },
   sleep: wait,
   get reducedMotion() {
     return reducedMotion.matches;
@@ -171,6 +183,7 @@ const ctx = {
   get env() {
     return {
       columns: terminal.columns(),
+      rows: terminal.rows(),
       viewport: { width: window.innerWidth, height: window.innerHeight },
       language: navigator.language,
       timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -190,7 +203,8 @@ const ctx = {
 };
 
 const run = async (value) => {
-  terminal.echo(value);
+  const { mode } = state;
+  terminal.echo(value, mode ? mode.prompt : PS1);
   setInput("");
   state.historyIndex = state.history.length;
   state.draft = "";
@@ -199,15 +213,18 @@ const run = async (value) => {
     return;
   }
 
-  state.history.push(value);
-  state.historyIndex = state.history.length;
+  // Lines typed inside a mode (e.g. vim's `:q`) are not shell history.
+  if (!mode) {
+    state.history.push(value);
+    state.historyIndex = state.history.length;
+  }
   state.locked = true;
   state.running = true;
   terminal.setPromptVisible(false);
 
   await wait(COMMAND_DELAY);
   try {
-    await execute(ctx, value);
+    await (mode ? mode.handle(ctx, value.trim()) : execute(ctx, value));
   } catch (error) {
     console.error(error);
     terminal.print([{ text: " ERR ", tone: "inverse" }, " looko-sh: internal error"]);
@@ -283,12 +300,16 @@ input.addEventListener("keydown", (event) => {
     return;
   }
   if (event.key === "Tab") {
-    completeInput();
+    if (!state.mode) {
+      completeInput();
+    }
     return;
   }
   if (event.key === "ArrowUp" || event.key === "ArrowDown") {
     event.preventDefault();
-    browseHistory(event.key === "ArrowUp" ? -1 : 1);
+    if (!state.mode) {
+      browseHistory(event.key === "ArrowUp" ? -1 : 1);
+    }
     return;
   }
 
@@ -305,6 +326,11 @@ input.addEventListener("keydown", (event) => {
       terminal.renderInput();
     } else if (key === "c" && input.selectionStart === input.selectionEnd) {
       event.preventDefault();
+      if (state.mode) {
+        setInput("");
+        state.mode.interrupt(ctx);
+        return;
+      }
       terminal.echo(`${input.value}^C`);
       state.historyIndex = state.history.length;
       setInput("");

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { COMMANDS, execute, trainFrame } from "../js/commands.js";
+import { COMMANDS, execute, trainFrame, vimMode } from "../js/commands.js";
 import { PROJECTS, findProject } from "../js/projects.js";
 
 const lineText = (line) =>
@@ -19,6 +19,8 @@ const createCtx = (overrides = {}) => {
     theme: "amber",
     frames: [],
     blockRemoved: false,
+    altScreen: false,
+    mode: null,
   };
   const ctx = {
     print: (line = "") => calls.lines.push(line),
@@ -32,6 +34,18 @@ const createCtx = (overrides = {}) => {
     clear: () => {
       calls.cleared += 1;
     },
+    enterAltScreen: () => {
+      calls.altScreen = true;
+    },
+    leaveAltScreen: () => {
+      calls.altScreen = false;
+    },
+    enterMode: (mode) => {
+      calls.mode = mode;
+    },
+    exitMode: () => {
+      calls.mode = null;
+    },
     sleep: async () => {},
     reducedMotion: false,
     history: ["ls", "history"],
@@ -42,6 +56,7 @@ const createCtx = (overrides = {}) => {
     now: () => new Date(2026, 9, 22, 9, 5, 3),
     env: {
       columns: 120,
+      rows: 30,
       viewport: { width: 1440, height: 900 },
       language: "zh-CN",
       timeZone: "Asia/Shanghai",
@@ -327,8 +342,8 @@ test("uptime reports the clock and how long the session has run", async () => {
 
 test("which resolves commands and aliases", async () => {
   const { ctx, text } = createCtx();
-  await execute(ctx, "which ls ll NEOFETCH vim");
-  assert.deepEqual(text(), ["/usr/bin/ls", "/usr/bin/ll", "/usr/bin/neofetch", "vim not found"]);
+  await execute(ctx, "which ls ll NEOFETCH vim emacs");
+  assert.deepEqual(text(), ["/usr/bin/ls", "/usr/bin/ll", "/usr/bin/neofetch", "/usr/bin/vim", "emacs not found"]);
 
   const empty = createCtx();
   await execute(empty.ctx, "which");
@@ -355,6 +370,40 @@ test("sl prints one still frame when motion is reduced", async () => {
   await execute(ctx, "sl");
   assert.deepEqual(text(), trainFrame(0));
   assert.deepEqual(calls.frames, []);
+});
+
+test("vim opens a full alternate screen and hands input to vim mode", async () => {
+  const { ctx, calls, text } = createCtx();
+  await execute(ctx, "vi notes.txt");
+  assert.equal(calls.altScreen, true);
+  assert.equal(calls.mode, vimMode);
+  assert.equal(text().length, 30 - 1);
+  assert.ok(text().some((line) => line.includes("VIM - Vi IMproved")));
+  assert.equal(text().at(-1), '"notes.txt" [New]');
+});
+
+test("vim mode only lets you out with a quit command", async () => {
+  const { ctx, calls, text } = createCtx();
+  await execute(ctx, "vim");
+  calls.lines.length = 0;
+
+  for (const line of [":w", ":help", ":wat", "hello"]) {
+    vimMode.handle(ctx, line);
+  }
+  vimMode.interrupt(ctx);
+  assert.deepEqual(text(), [
+    "E32: No file name",
+    "E149: Sorry, no help for LOOKO Terminal",
+    "E492: Not an editor command: wat",
+    "type  :q<Enter>  to exit",
+    "Type  :qa!  and press <Enter> to abandon all changes and exit Vim",
+  ]);
+  assert.equal(calls.mode, vimMode);
+
+  vimMode.handle(ctx, ":q!");
+  assert.equal(calls.altScreen, false);
+  assert.equal(calls.mode, null);
+  assert.equal(text().at(-1), "You escaped vim. Not everyone does.");
 });
 
 test("fastfetch puts info beside the art when wide and below it when narrow", async () => {

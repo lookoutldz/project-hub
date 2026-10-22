@@ -1,6 +1,8 @@
 const TONES = new Set(["dim", "bright", "inverse"]);
 const TYPING_PAUSE = 500;
 
+export const PS1 = "looko@home:~$ ";
+
 /**
  * A segment is either plain text or { text, tone?, href?, target? }.
  * A line is a string or an array of segments. Everything is written with textContent.
@@ -70,12 +72,16 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
 
   const printProjects = (projects) => append(createProjectList(projects));
 
-  const echo = (command) => {
+  const echo = (command, ps1 = PS1) => {
     const line = createLine([]);
-    const ps1 = document.createElement("span");
-    ps1.textContent = "looko@home:~$ ";
-    line.append(ps1, renderSegment({ text: command, tone: "bright" }));
+    const label = document.createElement("span");
+    label.textContent = ps1;
+    line.append(label, renderSegment({ text: command, tone: "bright" }));
     return append(line);
+  };
+
+  const setPs1 = (text) => {
+    prompt.querySelector(".ps1").textContent = text;
   };
 
   /** A fixed block of unwrapped lines that can be redrawn in place, for animations. */
@@ -91,6 +97,23 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
       },
       remove: () => element.remove(),
     };
+  };
+
+  // Like a real terminal's alternate screen: full-screen programs draw on a blank
+  // screen and the previous output comes back untouched when they exit.
+  let savedScreen = null;
+
+  const enterAltScreen = () => {
+    savedScreen = [...output.childNodes];
+    output.replaceChildren();
+  };
+
+  const leaveAltScreen = () => {
+    if (savedScreen) {
+      output.replaceChildren(...savedScreen);
+      savedScreen = null;
+    }
+    scrollToBottom();
   };
 
   const clear = () => {
@@ -135,11 +158,21 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     return charWidth > 0 ? Math.floor(output.clientWidth / charWidth) : 80;
   };
 
+  const rows = () => {
+    const style = getComputedStyle(screen);
+    const lineHeight = parseFloat(getComputedStyle(output).lineHeight);
+    const height = screen.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    return lineHeight > 0 ? Math.floor(height / lineHeight) : 24;
+  };
+
   return {
     print,
     printProjects,
     printBlock,
     echo,
+    setPs1,
+    enterAltScreen,
+    leaveAltScreen,
     clear,
     renderInput,
     markTyping,
@@ -147,5 +180,6 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     setFocused,
     scrollToBottom,
     columns,
+    rows,
   };
 };
