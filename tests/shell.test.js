@@ -54,6 +54,7 @@ test("ambiguous command prefix lists candidates", () => {
 
 test("open completes project names and aliases", () => {
   assert.deepEqual(complete("open te", COMMANDS), { value: "open terra", candidates: ["terra-echo", "terraecho"] });
+  assert.deepEqual(complete("info gi", COMMANDS), { value: "info github ", candidates: [] });
   assert.deepEqual(complete("open MO", COMMANDS), { value: "open moss ", candidates: [] });
 
   const { value, candidates } = complete("open ", COMMANDS);

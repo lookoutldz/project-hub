@@ -1,4 +1,4 @@
-import { PROJECTS, describeTargets, displayUrl, findProject } from "./projects.js";
+import { PROJECTS, SITE_HOST, describeTargets, findProject } from "./projects.js";
 import { findCommand, parse } from "./shell.js";
 
 export const THEMES = ["amber", "green"];
@@ -37,6 +37,26 @@ const FASTFETCH_ART = [
   " '------------------------'",
   "       _|__________|_",
 ];
+
+const projectTargets = () => PROJECTS.flatMap((project) => [project.name, ...project.aliases]);
+
+// Shared by `open` and `info`: prints usage or an error and returns undefined when the target is invalid.
+const resolveTarget = (ctx, command, args) => {
+  if (!args.length) {
+    ctx.print(`usage: ${command} <target>`);
+    ctx.print(dim(describeTargets()));
+    return undefined;
+  }
+
+  const project = findProject(args[0]);
+  if (!project) {
+    ctx.print(error(`${command}: no such target: ${args[0]}`));
+    ctx.print(dim(describeTargets()));
+  }
+  return project;
+};
+
+const projectLink = (project) => ({ text: project.name, href: project.url, target: project.name });
 
 const about = (ctx) => {
   ctx.print(bright("Looko"));
@@ -114,9 +134,9 @@ export const COMMANDS = [
         PROJECTS.forEach((project) => {
           ctx.print([
             `  [${project.index}] `,
-            { text: project.name, href: project.url, target: project.name },
+            projectLink(project),
             " ".repeat(Math.max(1, 12 - project.name.length)),
-            { text: displayUrl(project), tone: "dim" },
+            { text: project.summary, tone: "dim" },
           ]);
         });
         return;
@@ -129,23 +149,38 @@ export const COMMANDS = [
     name: "open",
     usage: "open <target>",
     summary: "open a project",
-    complete: () => PROJECTS.flatMap((project) => [project.name, ...project.aliases]),
+    complete: projectTargets,
     run: async (ctx, args) => {
-      if (!args.length) {
-        ctx.print("usage: open <target>");
-        ctx.print(dim(describeTargets()));
-        return;
-      }
-
-      const project = findProject(args[0]);
+      const project = resolveTarget(ctx, "open", args);
       if (!project) {
-        ctx.print(error(`open: no such target: ${args[0]}`));
-        ctx.print(dim(describeTargets()));
         return;
       }
 
       ctx.print(`Opening ${project.name}...`);
       await ctx.navigate(project);
+    },
+  },
+  {
+    name: "info",
+    usage: "info <target>",
+    summary: "show project details",
+    complete: projectTargets,
+    run: (ctx, args) => {
+      const project = resolveTarget(ctx, "info", args);
+      if (!project) {
+        return;
+      }
+
+      const field = (label, value) => [{ text: `  ${label.padEnd(9)}`, tone: "dim" }, value];
+      ctx.print(bright(`[${project.index}] ${project.name}`));
+      ctx.print(`  ${project.summary}`);
+      ctx.print("");
+      ctx.print(field("url", { text: project.url, href: project.url, target: project.name }));
+      if (project.aliases.length) {
+        ctx.print(field("aliases", project.aliases.join(", ")));
+      }
+      ctx.print(field("short", `${SITE_HOST}/${project.name}`));
+      ctx.print(field("open", `open ${project.name}`));
     },
   },
   {

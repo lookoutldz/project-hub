@@ -156,14 +156,16 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 # 5. 项目数据
 
-所有项目定义在 `js/projects.js` 中，是唯一数据来源。首屏 HTML、`ls`、`open`、补全、短链都与它保持一致。
+所有项目定义在 `js/projects.js` 中，是唯一数据来源。首屏 HTML、`ls`、`open`、`info`、补全、短链都与它保持一致。
 
-| 序号 | 名称 | 别名 | 地址 | 短链 |
-| --- | --- | --- | --- | --- |
-| 1 | `the-moss` | `moss` | `https://moss.lookoutldz.top/` | `/the-moss`、`/moss` |
-| 2 | `terra-echo` | `terraecho` | `https://terraecho.top/` | `/terra-echo`、`/terraecho` |
-| 3 | `github` | `gh` | `https://github.com/lookoutldz/` | `/github`、`/gh` |
-| 4 | `blog` | `juejin` | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
+| 序号 | 名称 | 别名 | 简介 | 地址 | 短链 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `the-moss` | `moss` | a digital garden of notes and thoughts | `https://moss.lookoutldz.top/` | `/the-moss`、`/moss` |
+| 2 | `terra-echo` | `terraecho` | a music archive from the world of Terra | `https://terraecho.top/` | `/terra-echo`、`/terraecho` |
+| 3 | `github` | `gh` | source code and side projects | `https://github.com/lookoutldz/` | `/github`、`/gh` |
+| 4 | `blog` | `juejin` | technical writing on Juejin | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
+
+简介为英文短句，不超过 40 个字符，用于 `ls -l` 和 `info`。
 
 项目在终端中显示为 `[序号] 名称`，例如 `[1] the-moss`。
 
@@ -204,7 +206,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 * 空输入时按 Tab 列出公开命令；
 * 第一个词有前缀时补全命令名，匹配范围包括彩蛋命令（方便探索发现）；
-* `open`、`man`、`theme` 补全对应参数；
+* `open`、`info`、`man`、`theme` 补全对应参数；
 * 有唯一候选时直接补全；有多个候选时补全公共前缀，并以暗色列出候选。
 
 ## 6.5 点击导航
@@ -236,8 +238,9 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 命令 | 说明 |
 | --- | --- |
 | `help` | 列出公开命令及简介 |
-| `ls [-l]` | 列出项目；`-l` 显示序号、名称和域名 |
+| `ls [-l]` | 列出项目；`-l` 显示序号、名称和简介 |
 | `open <target>` | 打开项目；`target` 可以是序号、名称或别名 |
+| `info <target>` | 显示项目详情：简介、地址、别名、短链 |
 | `about` | 介绍作者 |
 | `history` | 列出本次会话的历史命令 |
 | `theme [amber\|green]` | 查看或切换配色，选择保存在本地 |
@@ -250,6 +253,21 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 looko@home:~$ open moss
 Opening the-moss...
 ```
+
+`info` 的输出示例：
+
+```text
+looko@home:~$ info moss
+[1] the-moss
+  a digital garden of notes and thoughts
+
+  url      https://moss.lookoutldz.top/
+  aliases  moss
+  short    lookoutldz.top/the-moss
+  open     open the-moss
+```
+
+其中 url 是可点击的项目链接。`info` 的错误处理与 `open` 相同。
 
 `open` 的错误处理：
 
