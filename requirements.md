@@ -321,7 +321,7 @@ Building useful things.
 | `uname [-asnrvmo]` | 默认 `LOOKO`；`-a` 输出 `LOOKO home 1.0 #1 Cloudflare Pages js LOOKO/OS`；字段按固定顺序输出 |
 | `uptime` | `HH:MM:SS up <本次会话时长>, 1 user, load average: 0.00, 0.00, 0.00` |
 | `which <命令...>` | 存在的命令输出 `/usr/bin/<命令>`，不存在的输出 `<命令> not found` |
-| `sl` | 敲错 `ls` 的经典惩罚：一列自绘的字符画火车（LOOKO EXPRESS）从右向左驶过整个终端宽度，烟和车轮交替两帧，驶出后消失；与原版一样不能用 Ctrl+C 中断；开启“减少动态效果”时只输出一帧静止画面 |
+| `sl` | 敲错 `ls` 的经典惩罚：一列自绘的字符画火车（LOOKO EXPRESS）以每秒 30 列的速度从右向左平滑驶过整个终端宽度（按显示器刷新率逐帧移动，不按整字符跳动），烟和车轮每 160ms 交替一次以避免闪烁，驶出后消失；与原版一样不能用 Ctrl+C 中断；开启“减少动态效果”时只输出一帧静止画面 |
 | `vim` / `vi` / `nvim` | 进入 vim 模式，见 7.3 |
 
 ## 7.3 vim 模式

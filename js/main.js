@@ -167,7 +167,7 @@ const ctx = {
     state.mode = null;
     terminal.setPs1(PS1);
   },
-  sleep: wait,
+  nextFrame: () => terminal.nextFrame(),
   get reducedMotion() {
     return reducedMotion.matches;
   },

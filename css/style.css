@@ -138,6 +138,12 @@ body {
   white-space: pre;
 }
 
+.line__track {
+  width: max-content;
+  transform: translateX(var(--x, 0));
+  will-change: transform;
+}
+
 .line--hang {
   padding-left: var(--hang);
   text-indent: calc(-1 * var(--hang));

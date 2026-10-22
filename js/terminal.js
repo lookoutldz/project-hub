@@ -84,20 +84,32 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     prompt.querySelector(".ps1").textContent = text;
   };
 
-  /** A fixed block of unwrapped lines that can be redrawn in place, for animations. */
+  /**
+   * A fixed block of unwrapped lines for animations: `update` redraws the text,
+   * `moveTo` slides it horizontally by a (fractional) number of columns.
+   * The block clips whatever slides past either edge.
+   */
   const printBlock = (lines) => {
     const element = document.createElement("div");
     element.className = "line line--block";
-    element.textContent = lines.join("\n");
+    const track = document.createElement("div");
+    track.className = "line__track";
+    track.textContent = lines.join("\n");
+    element.append(track);
     append(element);
     return {
       update: (next) => {
-        element.textContent = next.join("\n");
+        track.textContent = next.join("\n");
         scrollToBottom();
+      },
+      moveTo: (column) => {
+        track.style.setProperty("--x", `${column}ch`);
       },
       remove: () => element.remove(),
     };
   };
+
+  const nextFrame = () => new Promise((resolve) => window.requestAnimationFrame(resolve));
 
   // Like a real terminal's alternate screen: full-screen programs draw on a blank
   // screen and the previous output comes back untouched when they exit.
@@ -169,6 +181,7 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     print,
     printProjects,
     printBlock,
+    nextFrame,
     echo,
     setPs1,
     enterAltScreen,

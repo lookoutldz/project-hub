@@ -180,8 +180,10 @@ const tree = (ctx) => {
 };
 
 // sl: the classic punishment for typing `sl` instead of `ls`. Our own train, not the original art.
-const SL_FRAME_DELAY = 50;
-const SL_STEP = 2;
+// Moves smoothly by a fraction of a column every display frame; smoke and wheels
+// switch at a calm, fixed rate instead of on every frame, which would flicker.
+export const SL_SPEED = 30; // columns per second
+export const SL_PUFF_INTERVAL = 160; // ms between smoke/wheel frames
 const SMOKE = [
   ["          (  )   ( )    (    )", "      (  )", "     ( )"],
   ["           ( )    (  )     (  )", "       ( )", "     (  )"],
@@ -197,10 +199,6 @@ const WHEELS = ["   (+)   (+)      (+)        (+)      (+)", "   (x)   (x)      
 
 export const trainFrame = (step) => [...SMOKE[step % 2], ...TRAIN_BODY, WHEELS[step % 2]];
 
-/** Places a line `offset` columns from the left edge, clipped to the screen on both sides. */
-const shiftLine = (line, offset, columns) =>
-  (offset >= 0 ? " ".repeat(offset) + line : line.slice(-offset)).slice(0, columns).trimEnd();
-
 const sl = async (ctx) => {
   if (ctx.reducedMotion) {
     trainFrame(0).forEach((line) => ctx.print(line));
@@ -210,10 +208,24 @@ const sl = async (ctx) => {
   // Runs to the end on purpose: like the original, Ctrl+C can't stop it.
   const { columns } = ctx.env;
   const width = Math.max(...trainFrame(0).map((line) => line.length));
-  const block = ctx.printBlock([]);
-  for (let offset = columns, step = 0; offset > -width; offset -= SL_STEP, step += 1) {
-    block.update(trainFrame(step).map((line) => shiftLine(line, offset, columns)));
-    await ctx.sleep(SL_FRAME_DELAY);
+  const block = ctx.printBlock(trainFrame(0));
+  block.moveTo(columns);
+
+  const start = await ctx.nextFrame();
+  let puff = 0;
+  for (let now = start; ; now = await ctx.nextFrame()) {
+    const elapsed = now - start;
+    const offset = columns - (elapsed / 1000) * SL_SPEED;
+    if (offset <= -width) {
+      break;
+    }
+    block.moveTo(offset);
+
+    const nextPuff = Math.floor(elapsed / SL_PUFF_INTERVAL);
+    if (nextPuff !== puff) {
+      puff = nextPuff;
+      block.update(trainFrame(puff));
+    }
   }
   block.remove();
 };

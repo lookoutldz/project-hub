@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { COMMANDS, execute, trainFrame, vimMode } from "../js/commands.js";
+import { COMMANDS, SL_PUFF_INTERVAL, SL_SPEED, execute, trainFrame, vimMode } from "../js/commands.js";
 import { PROJECTS, findProject } from "../js/projects.js";
 
 const lineText = (line) =>
@@ -18,6 +18,7 @@ const createCtx = (overrides = {}) => {
     rebooted: 0,
     theme: "amber",
     frames: [],
+    moves: [],
     blockRemoved: false,
     altScreen: false,
     mode: null,
@@ -25,12 +26,21 @@ const createCtx = (overrides = {}) => {
   const ctx = {
     print: (line = "") => calls.lines.push(line),
     printProjects: (projects) => calls.projects.push(projects),
-    printBlock: () => ({
-      update: (lines) => calls.frames.push(lines),
-      remove: () => {
-        calls.blockRemoved = true;
-      },
-    }),
+    printBlock: (lines) => {
+      calls.frames.push(lines);
+      return {
+        update: (next) => calls.frames.push(next),
+        moveTo: (column) => calls.moves.push(column),
+        remove: () => {
+          calls.blockRemoved = true;
+        },
+      };
+    },
+    // A 60 Hz display: each frame is 1000 / 60 ms after the previous one.
+    nextFrame: async () => {
+      calls.clock = (calls.clock ?? 0) + 1000 / 60;
+      return calls.clock;
+    },
     clear: () => {
       calls.cleared += 1;
     },
@@ -46,7 +56,6 @@ const createCtx = (overrides = {}) => {
     exitMode: () => {
       calls.mode = null;
     },
-    sleep: async () => {},
     reducedMotion: false,
     history: ["ls", "history"],
     getTheme: () => calls.theme,
@@ -355,14 +364,30 @@ test("sl drives the train from the right edge until it has fully left the screen
   await execute(ctx, "sl");
 
   const width = Math.max(...trainFrame(0).map((line) => line.length));
-  const [first] = calls.frames;
-  const last = calls.frames.at(-1);
-  assert.equal(calls.frames.length, Math.ceil((60 + width) / 2));
-  assert.ok(first.every((line) => line === ""), "starts just off the right edge");
-  assert.ok(last.some((line) => line.trim()), "last frame still shows the tail");
-  assert.ok(calls.frames.every((frame) => frame.every((line) => line.length <= 60)), "never wider than the screen");
-  assert.notDeepEqual(calls.frames[10], calls.frames[11], "smoke and wheels alternate");
+  const { moves } = calls;
+  assert.equal(moves[0], 60, "starts just off the right edge");
+  assert.ok(moves.at(-1) > -width, "last drawn position still shows the tail");
   assert.equal(calls.blockRemoved, true);
+
+  // Smooth: every display frame moves the same small fraction of a column.
+  const steps = moves.slice(1).map((column, index) => moves[index] - column);
+  const perFrame = SL_SPEED / 60;
+  steps.slice(1).forEach((step) => assert.ok(Math.abs(step - perFrame) < 1e-9));
+  assert.ok(perFrame < 1, "never jumps a whole column at once");
+
+  // The whole run takes as long as crossing the screen at SL_SPEED, ±1 frame.
+  const expectedFrames = ((60 + width) / SL_SPEED) * 60;
+  assert.ok(Math.abs(moves.length - 1 - expectedFrames) <= 2);
+});
+
+test("sl switches smoke and wheels at a calm fixed rate, not every frame", async () => {
+  const { ctx, calls } = createCtx({ env: { columns: 60, rows: 30 } });
+  await execute(ctx, "sl");
+
+  const durationMs = (calls.moves.length - 1) * (1000 / 60);
+  const expectedRedraws = Math.floor(durationMs / SL_PUFF_INTERVAL);
+  assert.ok(Math.abs(calls.frames.length - 1 - expectedRedraws) <= 1);
+  calls.frames.slice(1).forEach((frame, index) => assert.notDeepEqual(frame, calls.frames[index]));
 });
 
 test("sl prints one still frame when motion is reduced", async () => {
