@@ -194,14 +194,8 @@ body {
 }
 
 /* Screenshots in a single phosphor colour: grayscale multiplied onto the phosphor, so white turns amber and black stays black. */
-.line--image {
-  margin-top: calc(var(--line-height) * 1em);
-  padding-left: 2ch;
-}
-
 .thumb {
   display: block;
-  width: min(48ch, 100%);
   background: var(--fg);
   box-shadow: 0 0 8px var(--glow);
   isolation: isolate;
@@ -215,16 +209,94 @@ body {
   mix-blend-mode: multiply;
 }
 
-.thumb:focus-visible,
-.thumb:active {
+/* `info`: the screenshot itself is the link. */
+.line--image {
+  margin-top: calc(var(--line-height) * 1em);
+  padding-left: 2ch;
+}
+
+.line--image .thumb {
+  width: min(48ch, 100%);
+}
+
+.line--image .thumb:focus-visible,
+.line--image .thumb:active {
   outline: 1px solid var(--fg-bright);
   outline-offset: 3px;
 }
 
 @media (hover: hover) {
-  .thumb:hover {
+  .line--image .thumb:hover {
     outline: 1px solid var(--fg-bright);
     outline-offset: 3px;
+  }
+}
+
+/*
+  Boot-screen gallery: on wide screens each project is a dimmed screenshot card that lights up
+  on hover or focus, and only its label turns inverse. Narrow screens hide the screenshot
+  and keep the plain text list.
+*/
+.card .thumb {
+  display: none;
+}
+
+@media (min-width: 960px) and (min-height: 560px) {
+  .projects--gallery {
+    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+    column-gap: 3ch;
+    max-width: 172ch;
+    row-gap: calc(var(--line-height) * 1em);
+  }
+
+  .card,
+  .card:focus-visible,
+  .card:active {
+    display: block;
+    background: transparent;
+    color: inherit;
+    text-shadow: inherit;
+  }
+
+  .card .thumb {
+    display: block;
+    margin-bottom: calc(var(--line-height) * 0.5em);
+    opacity: 0.4;
+    transition: opacity 150ms ease-out;
+  }
+
+  .card:focus-visible .thumb,
+  .card:active .thumb {
+    opacity: 1;
+    outline: 1px solid var(--fg-bright);
+    outline-offset: 3px;
+  }
+
+  .card:focus-visible .card__label,
+  .card:active .card__label {
+    background: var(--fg);
+    color: var(--bg);
+    text-shadow: none;
+  }
+}
+
+@media (hover: hover) and (min-width: 960px) and (min-height: 560px) {
+  .card:hover {
+    background: transparent;
+    color: inherit;
+    text-shadow: inherit;
+  }
+
+  .card:hover .thumb {
+    opacity: 1;
+    outline: 1px solid var(--fg-bright);
+    outline-offset: 3px;
+  }
+
+  .card:hover .card__label {
+    background: var(--fg);
+    color: var(--bg);
+    text-shadow: none;
   }
 }
 
@@ -337,5 +409,9 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .cursor {
     animation: none;
+  }
+
+  .card .thumb {
+    transition: none;
   }
 }

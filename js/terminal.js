@@ -38,18 +38,45 @@ const createLine = (line, { hang = 0 } = {}) => {
   return element;
 };
 
-export const createProjectList = (projects) => {
+/** Screenshots are 640×400; the fixed size reserves their space before they load. */
+const createThumbImage = (src, alt) => {
+  const image = document.createElement("img");
+  image.src = src;
+  image.alt = alt;
+  image.width = 640;
+  image.height = 400;
+  image.decoding = "async";
+  return image;
+};
+
+/**
+ * Each project is a `[n] name` link. With `gallery`, a project with a screenshot also carries it:
+ * style.css shows the screenshots as cards only on wide screens, so narrow screens keep the plain text list.
+ */
+export const createProjectList = (projects, { gallery = false } = {}) => {
   const list = document.createElement("ul");
-  list.className = "projects";
+  list.className = gallery ? "projects projects--gallery" : "projects";
   projects.forEach((project) => {
     const item = document.createElement("li");
-    item.append(
-      renderSegment({
-        text: `[${project.index}] ${project.name}`,
-        href: project.url,
-        target: project.name,
-      })
-    );
+    const link = renderSegment({
+      text: `[${project.index}] ${project.name}`,
+      href: project.url,
+      target: project.name,
+    });
+    if (gallery && project.thumb) {
+      const label = document.createElement("span");
+      label.className = "card__label";
+      label.textContent = link.textContent;
+      const frame = document.createElement("span");
+      frame.className = "thumb";
+      // The label already names the link, so the screenshot is decorative.
+      const image = createThumbImage(project.thumb, "");
+      image.addEventListener("error", () => frame.remove(), { once: true });
+      frame.append(image);
+      link.classList.add("card");
+      link.replaceChildren(frame, label);
+    }
+    item.append(link);
     list.append(item);
   });
   return list;
@@ -70,11 +97,11 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
 
   const print = (line = "", options) => append(createLine(line, options));
 
-  const printProjects = (projects) => append(createProjectList(projects));
+  const printProjects = (projects, options) => append(createProjectList(projects, options));
 
   /**
    * A screenshot linked like a project name; style.css draws it in the phosphor colour.
-   * The fixed size reserves its space before it loads, and a broken image leaves no trace.
+   * A broken image leaves no trace.
    */
   const printImage = ({ src, alt, href, target }) => {
     const element = document.createElement("div");
@@ -83,12 +110,7 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     link.className = "link thumb";
     link.href = href;
     link.dataset.target = target ?? "";
-    const image = document.createElement("img");
-    image.src = src;
-    image.alt = alt;
-    image.width = 640;
-    image.height = 400;
-    image.decoding = "async";
+    const image = createThumbImage(src, alt);
     image.addEventListener("error", () => element.remove(), { once: true });
     link.append(image);
     element.append(link);

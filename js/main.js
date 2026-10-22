@@ -124,7 +124,7 @@ const printBootScreen = () => [
   terminal.print("Ready."),
   terminal.print(""),
   terminal.print([{ text: "PROJECTS", tone: "bright" }]),
-  terminal.printProjects(PROJECTS),
+  terminal.printProjects(PROJECTS, { gallery: true }),
   terminal.print(""),
   terminal.print([{ text: 'Type "help" for commands, or click a project.', tone: "dim" }]),
 ];
