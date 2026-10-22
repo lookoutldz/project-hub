@@ -193,6 +193,41 @@ body {
   }
 }
 
+/* Screenshots in a single phosphor colour: grayscale multiplied onto the phosphor, so white turns amber and black stays black. */
+.line--image {
+  margin-top: calc(var(--line-height) * 1em);
+  padding-left: 2ch;
+}
+
+.thumb {
+  display: block;
+  width: min(48ch, 100%);
+  background: var(--fg);
+  box-shadow: 0 0 8px var(--glow);
+  isolation: isolate;
+}
+
+.thumb img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: grayscale(1) contrast(1.1) brightness(0.85);
+  mix-blend-mode: multiply;
+}
+
+.thumb:focus-visible,
+.thumb:active {
+  outline: 1px solid var(--fg-bright);
+  outline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .thumb:hover {
+    outline: 1px solid var(--fg-bright);
+    outline-offset: 3px;
+  }
+}
+
 .prompt {
   position: relative;
   min-height: calc(var(--line-height) * 1em);

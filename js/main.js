@@ -155,6 +155,7 @@ const boot = async ({ animate }) => {
 const ctx = {
   print: (line, options) => terminal.print(line, options),
   printProjects: (projects) => terminal.printProjects(projects),
+  printImage: (image) => terminal.printImage(image),
   printBlock: (lines) => terminal.printBlock(lines),
   clear: () => terminal.clear(),
   enterAltScreen: () => terminal.enterAltScreen(),

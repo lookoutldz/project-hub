@@ -72,6 +72,29 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
 
   const printProjects = (projects) => append(createProjectList(projects));
 
+  /**
+   * A screenshot linked like a project name; style.css draws it in the phosphor colour.
+   * The fixed size reserves its space before it loads, and a broken image leaves no trace.
+   */
+  const printImage = ({ src, alt, href, target }) => {
+    const element = document.createElement("div");
+    element.className = "line line--image";
+    const link = document.createElement("a");
+    link.className = "link thumb";
+    link.href = href;
+    link.dataset.target = target ?? "";
+    const image = document.createElement("img");
+    image.src = src;
+    image.alt = alt;
+    image.width = 640;
+    image.height = 400;
+    image.decoding = "async";
+    image.addEventListener("error", () => element.remove(), { once: true });
+    link.append(image);
+    element.append(link);
+    return append(element);
+  };
+
   const echo = (command, ps1 = PS1) => {
     const line = createLine([]);
     const label = document.createElement("span");
@@ -180,6 +203,7 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
   return {
     print,
     printProjects,
+    printImage,
     printBlock,
     nextFrame,
     echo,

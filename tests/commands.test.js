@@ -13,6 +13,7 @@ const createCtx = (overrides = {}) => {
   const calls = {
     lines: [],
     projects: [],
+    images: [],
     navigated: [],
     cleared: 0,
     rebooted: 0,
@@ -26,6 +27,7 @@ const createCtx = (overrides = {}) => {
   const ctx = {
     print: (line = "") => calls.lines.push(line),
     printProjects: (projects) => calls.projects.push(projects),
+    printImage: (image) => calls.images.push(image),
     printBlock: (lines) => {
       calls.frames.push(lines);
       return {
@@ -193,6 +195,14 @@ test("info shows project details with a link to the project", async () => {
     href: "https://moss.lookoutldz.top/",
     target: "the-moss",
   });
+  assert.deepEqual(calls.images, [
+    {
+      src: "/assets/thumbs/the-moss.webp",
+      alt: "the-moss screenshot",
+      href: "https://moss.lookoutldz.top/",
+      target: "the-moss",
+    },
+  ]);
   assert.deepEqual(calls.navigated, []);
 });
 

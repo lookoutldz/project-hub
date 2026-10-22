@@ -7,6 +7,7 @@ export const PROJECTS = [
     aliases: ["moss"],
     summary: "a digital garden of notes and thoughts",
     url: "https://moss.lookoutldz.top/",
+    thumb: "/assets/thumbs/the-moss.webp",
   },
   {
     index: 2,
@@ -14,6 +15,7 @@ export const PROJECTS = [
     aliases: ["terraecho"],
     summary: "a music archive from the world of Terra",
     url: "https://terraecho.top/",
+    thumb: "/assets/thumbs/terra-echo.webp",
   },
   {
     index: 3,
@@ -21,6 +23,7 @@ export const PROJECTS = [
     aliases: ["gh"],
     summary: "source code and side projects",
     url: "https://github.com/lookoutldz/",
+    thumb: "/assets/thumbs/github.webp",
   },
   {
     index: 4,
@@ -28,6 +31,7 @@ export const PROJECTS = [
     aliases: ["juejin"],
     summary: "technical writing on Juejin",
     url: "https://juejin.cn/user/4341288062690398",
+    thumb: "/assets/thumbs/blog.webp",
   },
 ];
 

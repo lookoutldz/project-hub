@@ -392,6 +392,14 @@ export const COMMANDS = [
         ctx.print([{ text: `  ${label.padEnd(9)}`, tone: "dim" }, value], { hang: 11 });
       ctx.print(bright(`[${project.index}] ${project.name}`));
       ctx.print(`  ${project.summary}`, { hang: 2 });
+      if (project.thumb) {
+        ctx.printImage({
+          src: project.thumb,
+          alt: `${project.name} screenshot`,
+          href: project.url,
+          target: project.name,
+        });
+      }
       ctx.print("");
       field("url", { text: project.url, href: project.url, target: project.name });
       if (project.aliases.length) {

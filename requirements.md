@@ -245,7 +245,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | `help` | 列出公开命令及简介 |
 | `ls [-lah]` | 列出项目；`-l` 显示序号、名称和简介，`-a` 额外显示隐藏文件，`-h` 为兼容习惯而接受、不改变输出；参数可合并（如 `-lah`） |
 | `open <target>` | 打开项目；`target` 可以是序号、名称或别名 |
-| `info <target>` | 显示项目详情：简介、地址、别名、短链 |
+| `info <target>` | 显示项目详情：简介、截图、地址、别名、短链 |
 | `about` | 介绍作者 |
 | `history` | 列出本次会话的历史命令 |
 | `theme [amber\|green]` | 查看或切换配色，选择保存在本地 |
@@ -266,6 +266,10 @@ looko@home:~$ info moss
 [1] the-moss
   a digital garden of notes and thoughts
 
+  ┌──────────────────────────────┐
+  │     (the-moss 磷光单色截图)    │
+  └──────────────────────────────┘
+
   url      https://moss.lookoutldz.top/
   aliases  moss
   short    lookoutldz.top/the-moss
@@ -273,6 +277,13 @@ looko@home:~$ info moss
 ```
 
 其中 url 是可点击的项目链接。`info` 的错误处理与 `open` 相同。
+
+截图来自项目的可选字段 `thumb`（`assets/thumbs/<名称>.webp`，640×400）：
+
+* 宽度最多 48 列，窄屏时缩到屏幕宽度，按 16:10 预留高度，加载完成前不会让输出跳动；
+* 用 CSS 转成灰度后与磷光色正片叠底，白色变成当前磷光色、黑色保持黑色，切换 `theme green` 时随之变绿，扫描线照常覆盖，不破坏单色原则；
+* 截图本身也是项目链接，点击与点击项目名相同（打出 `open <名称>`），悬停或聚焦时显示亮色描边；
+* 没有 `thumb` 或图片加载失败时不显示截图，其余输出不变。
 
 `open` 的错误处理：
 
@@ -412,6 +423,7 @@ Type "help" for available commands.
 ├── .github/workflows/  # CI：推送和 PR 时运行测试
 ├── assets/
 │   ├── fonts/          # IBM Plex Mono woff2（拉丁子集）
+│   ├── thumbs/         # 项目截图，info 中显示
 │   ├── favicon.svg
 │   ├── apple-touch-icon.png
 │   └── og.png
@@ -432,7 +444,7 @@ Type "help" for available commands.
 * `projects.js`：导出项目列表、按序号/名称/别名查找目标的函数，以及只按名称/别名查找的短链函数。浏览器端和 Pages Function 共用这一个文件。
 * `shell.js`：纯函数，不访问 DOM。负责分词、命令查找、补全、公共前缀计算、解析分享链接中的命令。
 * `commands.js`：命令注册表。每条命令形如 `{ name, aliases, usage, summary, hidden, complete, run }`。`help`、`man` 和补全都从注册表生成。`run(ctx, args)` 只通过 `ctx` 与终端交互，因此可以用假 `ctx` 测试。
-* `terminal.js`：维护输出区和输入层。所有文本通过 `textContent` 写入，不使用 `innerHTML`。
+* `terminal.js`：维护输出区和输入层。所有文本通过 `textContent` 写入，图片用 `createElement` 创建，不使用 `innerHTML`。
 * `main.js`：启动流程、键盘与点击事件、状态栏时钟、主题初始化。
 
 ## 12.3 输入层

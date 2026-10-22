@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, stat } from "node:fs/promises";
 import { test } from "node:test";
 
 import { onRequestGet } from "../functions/[name].js";
@@ -16,6 +16,16 @@ test("index.html does not hardcode the project list", async () => {
   PROJECTS.forEach((project) => {
     assert.ok(!html.includes(`[${project.index}] ${project.name}`), project.name);
   });
+});
+
+test("every project thumbnail is a same-origin file under assets/thumbs", async () => {
+  const thumbs = PROJECTS.filter((project) => project.thumb);
+  assert.ok(thumbs.length > 0);
+  for (const project of thumbs) {
+    assert.match(project.thumb, /^\/assets\/thumbs\/[\w-]+\.webp$/, project.name);
+    const file = await stat(new URL(`..${project.thumb}`, import.meta.url));
+    assert.ok(file.size > 0, project.name);
+  }
 });
 
 test("every executable script opts out of Cloudflare Rocket Loader", async () => {

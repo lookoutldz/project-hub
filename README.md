@@ -24,7 +24,7 @@ Looko 的个人导航主页：整个网站就是一块琥珀色的 CRT 终端屏
 | `help` | 列出命令 |
 | `ls [-lah]` | 列出项目，`-l` 显示简介 |
 | `open <目标>` | 打开项目，目标可以是序号、名称或别名 |
-| `info <目标>` | 查看项目详情 |
+| `info <目标>` | 查看项目详情和截图 |
 | `about` | 关于作者 |
 | `history` | 历史命令 |
 | `theme [amber\|green]` | 查看或切换配色 |
@@ -66,10 +66,21 @@ node --test
   aliases: ["moss"],         // 别名，同样可用于 open 和短链
   summary: "a digital garden of notes and thoughts", // 不超过 40 个字符
   url: "https://moss.lookoutldz.top/",
+  thumb: "/assets/thumbs/the-moss.webp", // 可选，info 中显示的截图
 },
 ```
 
 启动画面、项目数量、补全和短链都会自动更新，不需要修改其他文件。
+
+`thumb` 是可选的项目截图，放在 `assets/thumbs/` 下，`info` 会把它以磷光单色显示出来。截图建议 1280×800 截取后缩到 640×400 的 WebP，例如用 Chrome 无头模式加 `cwebp`：
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --hide-scrollbars --window-size=1280,800 --virtual-time-budget=10000 --screenshot=shot.png https://moss.lookoutldz.top/
+```
+
+```bash
+cwebp -resize 640 400 -q 78 shot.png -o assets/thumbs/the-moss.webp
+```
 
 ## 目录结构
 
@@ -78,6 +89,7 @@ index.html          页面结构（不包含项目数据）
 _headers            Cloudflare Pages 响应头：CSP 与缓存
 functions/[name].js 短链：按 projects.js 302 跳转
 css/style.css       样式
+assets/thumbs/      项目截图（info 中显示）
 js/projects.js      项目数据
 js/commands.js      命令注册表
 js/shell.js         分词、解析、补全（纯函数）
