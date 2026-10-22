@@ -1,6 +1,6 @@
 import { COMMANDS, THEMES, execute } from "./commands.js";
 import { PROJECTS, findProject } from "./projects.js";
-import { complete } from "./shell.js";
+import { commandFromQuery, complete } from "./shell.js";
 import { createTerminal } from "./terminal.js";
 
 const BOOT_LINE_DELAY = 120;
@@ -380,6 +380,18 @@ window.setInterval(updateClock, 10000);
 window.visualViewport?.addEventListener("resize", syncViewport);
 syncViewport();
 
+// A share link like `/?cmd=fastfetch` types and runs that command once the terminal is ready.
+const runQueryCommand = async () => {
+  const command = commandFromQuery(window.location.search);
+  if (!command) {
+    return;
+  }
+
+  state.locked = true;
+  await typeCommand(command);
+  await run(input.value);
+};
+
 const animateBoot = !reducedMotion.matches && !storage.get("sessionStorage", BOOTED_KEY);
 storage.set("sessionStorage", BOOTED_KEY, "1");
-boot([...output.children], { animate: animateBoot });
+boot([...output.children], { animate: animateBoot }).then(runQueryCommand);

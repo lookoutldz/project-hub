@@ -223,6 +223,12 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 * 点击屏幕任意空白处聚焦输入；
 * 如果用户正在选择文本，则不抢夺焦点，保证可以复制输出内容。
 
+## 6.7 分享链接
+
+* 访问 `/?cmd=<命令>`（如 `/?cmd=fastfetch`、`/?cmd=ls+-l`）时，终端启动完成后在输入行逐字打出该命令并执行，与手动输入完全等价；
+* 命令中的换行视为空格，首尾空白去除，最长 200 个字符；
+* 页面的 canonical 始终指向首页，带参数的链接不会被搜索引擎当作重复页面。
+
 ---
 
 # 7. 命令
@@ -376,7 +382,7 @@ Type "help" for available commands.
 ## 12.2 模块职责
 
 * `projects.js`：导出项目列表与按序号、名称、别名查找目标的函数。
-* `shell.js`：纯函数，不访问 DOM。负责分词、命令查找、补全、公共前缀计算。
+* `shell.js`：纯函数，不访问 DOM。负责分词、命令查找、补全、公共前缀计算、解析分享链接中的命令。
 * `commands.js`：命令注册表。每条命令形如 `{ name, aliases, usage, summary, hidden, complete, run }`。`help`、`man` 和补全都从注册表生成。`run(ctx, args)` 只通过 `ctx` 与终端交互，因此可以用假 `ctx` 测试。
 * `terminal.js`：维护输出区和输入层。所有文本通过 `textContent` 写入，不使用 `innerHTML`。
 * `main.js`：启动流程、键盘与点击事件、状态栏时钟、主题初始化。

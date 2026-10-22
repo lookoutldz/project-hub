@@ -2,7 +2,15 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { COMMANDS } from "../js/commands.js";
-import { commonPrefix, complete, findCommand, parse, tokenize } from "../js/shell.js";
+import {
+  MAX_QUERY_COMMAND_LENGTH,
+  commandFromQuery,
+  commonPrefix,
+  complete,
+  findCommand,
+  parse,
+  tokenize,
+} from "../js/shell.js";
 
 test("tokenize splits on any whitespace and drops empties", () => {
   assert.deepEqual(tokenize("  open   moss \t"), ["open", "moss"]);
@@ -63,4 +71,18 @@ test("no completion for unknown commands, extra arguments or no matches", () => 
   assert.deepEqual(complete("open moss x", COMMANDS), { value: "open moss x", candidates: [] });
   assert.deepEqual(complete("open zzz", COMMANDS), { value: "open zzz", candidates: [] });
   assert.deepEqual(complete("zzz", COMMANDS), { value: "zzz", candidates: [] });
+});
+
+test("commandFromQuery decodes the cmd parameter from a share link", () => {
+  assert.equal(commandFromQuery("?cmd=ls+-l"), "ls -l");
+  assert.equal(commandFromQuery("?cmd=open%20moss&utm=x"), "open moss");
+  assert.equal(commandFromQuery("?cmd=%20%20fastfetch%20"), "fastfetch");
+  assert.equal(commandFromQuery("?cmd=echo%20a%0Ab"), "echo a b");
+});
+
+test("commandFromQuery returns empty for missing or blank commands and caps length", () => {
+  assert.equal(commandFromQuery(""), "");
+  assert.equal(commandFromQuery("?utm=x"), "");
+  assert.equal(commandFromQuery("?cmd=+++"), "");
+  assert.equal(commandFromQuery(`?cmd=echo+${"a".repeat(500)}`).length, MAX_QUERY_COMMAND_LENGTH);
 });

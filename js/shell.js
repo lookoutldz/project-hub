@@ -5,6 +5,14 @@ export const parse = (input) => {
   return { name: name.toLowerCase(), args };
 };
 
+export const MAX_QUERY_COMMAND_LENGTH = 200;
+
+/** Reads the command from a share link such as `?cmd=ls+-l`; returns "" when absent. */
+export const commandFromQuery = (search) => {
+  const value = new URLSearchParams(search).get("cmd") ?? "";
+  return value.replace(/[\r\n]+/g, " ").trim().slice(0, MAX_QUERY_COMMAND_LENGTH);
+};
+
 export const findCommand = (registry, name) => {
   const key = String(name ?? "").toLowerCase();
   return registry.find((command) => command.name === key || command.aliases?.includes(key));
