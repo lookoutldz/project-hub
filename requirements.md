@@ -361,6 +361,7 @@ Type "help" for available commands.
 ├── robots.txt
 ├── sitemap.xml
 ├── requirements.md
+├── .github/workflows/  # CI：推送和 PR 时运行测试
 ├── assets/
 │   ├── fonts/          # IBM Plex Mono woff2（拉丁子集）
 │   ├── favicon.svg
@@ -412,7 +413,8 @@ Type "help" for available commands.
 ## 12.6 测试
 
 * 使用 Node 内置测试运行器，在仓库根目录执行 `node --test`；
-* 覆盖分词、目标匹配、补全、各命令的输出与错误分支；
+* 覆盖分词、目标匹配、补全、分享链接解析、各命令的输出与错误分支；
+* GitHub Actions 在推送到 `main` 和提交 PR 时自动运行测试；
 * DOM 行为通过浏览器手动验证（桌面与手机宽度）。
 
 ---
