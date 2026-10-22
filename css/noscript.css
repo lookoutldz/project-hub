@@ -1,0 +1,8 @@
+.output {
+  visibility: visible;
+  animation: none;
+}
+
+.status-hints {
+  display: none;
+}
