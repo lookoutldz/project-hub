@@ -427,6 +427,8 @@ Type "help" for available commands.
 
 缓存：JS 和 CSS 使用 Pages 默认的 `public, max-age=0, must-revalidate`，每次通过 ETag 校验，发版后立即生效。Cloudflare 域名设置中的 Browser Cache TTL 必须为 “Respect Existing Headers”，否则浏览器可能继续使用旧版 JS。
 
+Rocket Loader：会改写 `<script>` 并破坏 ES 模块脚本，导致终端无法启动。域名设置中应关闭 Rocket Loader；作为兜底，`index.html` 中的脚本都带 `data-cfasync="false"`，让 Rocket Loader 跳过它们，测试会校验这一点。
+
 ## 12.5 本地存储
 
 * 配色选择保存在 `localStorage`，由 `theme-init.js` 在首次绘制前应用，避免刷新时闪现默认配色；

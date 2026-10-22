@@ -18,6 +18,14 @@ test("index.html does not hardcode the project list", async () => {
   });
 });
 
+test("every executable script opts out of Cloudflare Rocket Loader", async () => {
+  const html = await read("index.html");
+  const scripts = [...html.matchAll(/<script\b[^>]*>/g)].map(([tag]) => tag);
+  const executable = scripts.filter((tag) => !tag.includes("application/ld+json"));
+  assert.ok(executable.length > 0);
+  executable.forEach((tag) => assert.match(tag, /data-cfasync="false"/, tag));
+});
+
 test("every project name and alias is a 302 short link to the project", () => {
   PROJECTS.forEach((project) => {
     [project.name, ...project.aliases].forEach((slug) => {
