@@ -140,7 +140,7 @@ const boot = async (nodes, { animate }) => {
 };
 
 const ctx = {
-  print: (line) => terminal.print(line),
+  print: (line, options) => terminal.print(line, options),
   printProjects: (projects) => terminal.printProjects(projects),
   clear: () => terminal.clear(),
   get history() {

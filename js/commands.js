@@ -132,12 +132,15 @@ export const COMMANDS = [
       if (args.length === 1 && args[0] === "-l") {
         ctx.print(dim(`total ${PROJECTS.length}`));
         PROJECTS.forEach((project) => {
-          ctx.print([
-            `  [${project.index}] `,
-            projectLink(project),
-            " ".repeat(Math.max(1, 12 - project.name.length)),
-            { text: project.summary, tone: "dim" },
-          ]);
+          ctx.print(
+            [
+              `  [${project.index}] `,
+              projectLink(project),
+              " ".repeat(Math.max(1, 12 - project.name.length)),
+              { text: project.summary, tone: "dim" },
+            ],
+            { hang: 18 }
+          );
         });
         return;
       }
@@ -171,16 +174,17 @@ export const COMMANDS = [
         return;
       }
 
-      const field = (label, value) => [{ text: `  ${label.padEnd(9)}`, tone: "dim" }, value];
+      const field = (label, value) =>
+        ctx.print([{ text: `  ${label.padEnd(9)}`, tone: "dim" }, value], { hang: 11 });
       ctx.print(bright(`[${project.index}] ${project.name}`));
-      ctx.print(`  ${project.summary}`);
+      ctx.print(`  ${project.summary}`, { hang: 2 });
       ctx.print("");
-      ctx.print(field("url", { text: project.url, href: project.url, target: project.name }));
+      field("url", { text: project.url, href: project.url, target: project.name });
       if (project.aliases.length) {
-        ctx.print(field("aliases", project.aliases.join(", ")));
+        field("aliases", project.aliases.join(", "));
       }
-      ctx.print(field("short", `${SITE_HOST}/${project.name}`));
-      ctx.print(field("open", `open ${project.name}`));
+      field("short", `${SITE_HOST}/${project.name}`);
+      field("open", `open ${project.name}`);
     },
   },
   {

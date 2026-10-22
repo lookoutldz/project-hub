@@ -23,9 +23,14 @@ const renderSegment = (segment) => {
   return element;
 };
 
-const createLine = (line) => {
+/** `hang` is a column count: wrapped text continues under that column, like a table cell. */
+const createLine = (line, { hang = 0 } = {}) => {
   const element = document.createElement("div");
   element.className = "line";
+  if (hang > 0) {
+    element.classList.add("line--hang");
+    element.style.setProperty("--hang", `${hang}ch`);
+  }
   const segments = typeof line === "string" ? [line] : line;
   segments.forEach((segment) => element.append(renderSegment(segment)));
   return element;
@@ -61,7 +66,7 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     return element;
   };
 
-  const print = (line = "") => append(createLine(line));
+  const print = (line = "", options) => append(createLine(line, options));
 
   const printProjects = (projects) => append(createProjectList(projects));
 
