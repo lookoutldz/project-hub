@@ -370,10 +370,9 @@ const syncViewport = () => {
   terminal.scrollToBottom();
 };
 
+// theme-init.js already applied the saved theme; this validates it and syncs theme-color.
 const savedTheme = storage.get("localStorage", THEME_KEY);
-if (THEMES.includes(savedTheme)) {
-  applyTheme(savedTheme);
-}
+applyTheme(THEMES.includes(savedTheme) ? savedTheme : "amber");
 
 resetStatus();
 updateClock();

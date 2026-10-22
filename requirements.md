@@ -364,6 +364,7 @@ Type "help" for available commands.
 │   ├── style.css
 │   └── noscript.css    # 无 JS 时显示首屏内容
 ├── js/
+│   ├── theme-init.js   # 在 <head> 中提前应用已保存的配色
 │   ├── main.js         # 入口：启动、事件绑定
 │   ├── terminal.js     # 输出渲染、输入层、光标、滚动
 │   ├── shell.js        # 分词、解析、目标匹配、补全（纯函数）
@@ -398,7 +399,7 @@ Type "help" for available commands.
 
 ## 12.5 本地存储
 
-* 配色选择保存在 `localStorage`；
+* 配色选择保存在 `localStorage`，由 `theme-init.js` 在首次绘制前应用，避免刷新时闪现默认配色；
 * “本会话已播放启动动画”标记保存在 `sessionStorage`；
 * 所有存储读写都包裹在 `try/catch` 中，存储不可用时功能照常工作。
 
