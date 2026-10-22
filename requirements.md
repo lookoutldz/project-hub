@@ -422,7 +422,7 @@ Type "help" for available commands.
 `_headers`：
 
 * 字体文件长期缓存（内容不变）；
-* `Content-Security-Policy` 只允许同源脚本、样式、字体和图片；
+* `Content-Security-Policy` 只允许同源脚本、样式、字体和图片；唯一的例外是 Cloudflare Web Analytics：脚本允许 `https://static.cloudflareinsights.com`，上报允许 `https://cloudflareinsights.com`；
 * 页面中不使用内联脚本和内联样式（JSON-LD 数据块除外，它不会被执行）。
 
 缓存：JS 和 CSS 使用 Pages 默认的 `public, max-age=0, must-revalidate`，每次通过 ETag 校验，发版后立即生效。Cloudflare 域名设置中的 Browser Cache TTL 必须为 “Respect Existing Headers”，否则浏览器可能继续使用旧版 JS。

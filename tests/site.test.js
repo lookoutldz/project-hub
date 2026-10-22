@@ -26,6 +26,18 @@ test("every executable script opts out of Cloudflare Rocket Loader", async () =>
   executable.forEach((tag) => assert.match(tag, /data-cfasync="false"/, tag));
 });
 
+test("the CSP allows Cloudflare Web Analytics and nothing else off-site", async () => {
+  const headers = await read("_headers");
+  const csp = headers.match(/Content-Security-Policy: (.+)/)[1];
+  const directives = Object.fromEntries(
+    csp.split(";").map((part) => part.trim().split(/\s+/)).map(([name, ...values]) => [name, values])
+  );
+
+  assert.deepEqual(directives["script-src"], ["'self'", "https://static.cloudflareinsights.com"]);
+  assert.deepEqual(directives["connect-src"], ["'self'", "https://cloudflareinsights.com"]);
+  assert.deepEqual(directives["default-src"], ["'self'"]);
+});
+
 test("every project name and alias is a 302 short link to the project", () => {
   PROJECTS.forEach((project) => {
     [project.name, ...project.aliases].forEach((slug) => {
