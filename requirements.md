@@ -169,7 +169,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 项目在终端中显示为 `[序号] 名称`，例如 `[1] the-moss`。
 
-每个名称和别名都有对应短链。新增或修改项目时，需要同步更新 `js/projects.js`、`index.html` 首屏列表和 `_redirects`；`tests/site.test.js` 会校验三者一致。
+每个名称和别名都由 Pages Function 自动提供短链，只按名称和别名匹配，不按序号匹配。新增或修改项目时，需要同步更新 `js/projects.js` 和 `index.html` 首屏列表；`tests/site.test.js` 会校验两者一致。
 
 ---
 
@@ -373,8 +373,9 @@ Type "help" for available commands.
 ```text
 /
 ├── index.html          # 页面结构与首屏静态输出
-├── _redirects          # Cloudflare Pages 短链
 ├── _headers            # 响应头：缓存与 CSP
+├── functions/
+│   └── [name].js       # Pages Function：按 projects.js 处理短链
 ├── robots.txt
 ├── sitemap.xml
 ├── requirements.md
@@ -399,7 +400,7 @@ Type "help" for available commands.
 
 ## 12.2 模块职责
 
-* `projects.js`：导出项目列表与按序号、名称、别名查找目标的函数。
+* `projects.js`：导出项目列表、按序号/名称/别名查找目标的函数，以及只按名称/别名查找的短链函数。浏览器端和 Pages Function 共用这一个文件。
 * `shell.js`：纯函数，不访问 DOM。负责分词、命令查找、补全、公共前缀计算、解析分享链接中的命令。
 * `commands.js`：命令注册表。每条命令形如 `{ name, aliases, usage, summary, hidden, complete, run }`。`help`、`man` 和补全都从注册表生成。`run(ctx, args)` 只通过 `ctx` 与终端交互，因此可以用假 `ctx` 测试。
 * `terminal.js`：维护输出区和输入层。所有文本通过 `textContent` 写入，不使用 `innerHTML`。
@@ -413,7 +414,7 @@ Type "help" for available commands.
 
 ## 12.4 Cloudflare Pages 配置
 
-`_redirects`：为每个项目提供短链，例如 `/moss` 302 跳转到对应项目地址。
+`functions/[name].js`：处理 `/moss` 这类单段路径。匹配到项目名称或别名时 302 跳转到项目地址；否则调用 `next()` 交给静态文件（如 `/robots.txt`）。
 
 `_headers`：
 
@@ -430,7 +431,7 @@ Type "help" for available commands.
 ## 12.6 测试
 
 * 使用 Node 内置测试运行器，在仓库根目录执行 `node --test`；
-* 覆盖分词、目标匹配、补全、分享链接解析、各命令的输出与错误分支；
+* 覆盖分词、目标匹配、补全、分享链接解析、短链函数、各命令的输出与错误分支；
 * GitHub Actions 在推送到 `main` 和提交 PR 时自动运行测试；
 * DOM 行为通过浏览器手动验证（桌面与手机宽度）。
 

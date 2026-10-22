@@ -45,5 +45,14 @@ export const findProject = (query, projects = PROJECTS) => {
   );
 };
 
+/**
+ * Short links (`lookoutldz.top/moss`) resolve by name or alias only, never by index,
+ * so a shared link keeps pointing at the same project when the list is reordered.
+ */
+export const findShortLink = (slug, projects = PROJECTS) => {
+  const key = String(slug ?? "").trim().toLowerCase();
+  return projects.find((project) => project.name === key || project.aliases.includes(key));
+};
+
 export const describeTargets = (projects = PROJECTS) =>
   `targets: 1-${projects.length}, ${projects.map((project) => project.name).join(", ")}`;

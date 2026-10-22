@@ -2,11 +2,14 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
+import { onRequestGet } from "../functions/[name].js";
 import { PROJECTS } from "../js/projects.js";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-// projects.js is the single source of truth; the static HTML and short links must match it.
+const request = (name) => onRequestGet({ params: { name }, next: () => "static" });
+
+// projects.js is the single source of truth; the static HTML must match it.
 test("index.html lists every project as a real link in order", async () => {
   const html = await read("index.html");
   const links = [...html.matchAll(/<a class="link" href="([^"]+)" data-target="([^"]+)">\[(\d+)\] ([^<]+)<\/a>/g)].map(
@@ -21,18 +24,22 @@ test("index.html lists every project as a real link in order", async () => {
   assert.match(html, new RegExp(`>${PROJECTS.length} routes<`));
 });
 
-test("_redirects has a short link for every project name and alias", async () => {
-  const rules = new Map(
-    (await read("_redirects"))
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line) => line.trim().split(/\s+/))
-      .map(([from, to, status]) => [from, { to, status }])
-  );
-
+test("every project name and alias is a 302 short link to the project", () => {
   PROJECTS.forEach((project) => {
-    [project.name, ...project.aliases].forEach((key) => {
-      assert.deepEqual(rules.get(`/${key}`), { to: project.url, status: "302" }, key);
+    [project.name, ...project.aliases].forEach((slug) => {
+      const response = request(slug);
+      assert.equal(response.status, 302, slug);
+      assert.equal(response.headers.get("location"), project.url, slug);
     });
   });
+});
+
+test("short links ignore case", () => {
+  assert.equal(request("GH").headers.get("location"), "https://github.com/lookoutldz/");
+});
+
+test("other single-segment paths fall through to static files", () => {
+  assert.equal(request("robots.txt"), "static");
+  assert.equal(request("1"), "static");
+  assert.equal(request("steamtower"), "static");
 });
