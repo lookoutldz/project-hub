@@ -425,6 +425,8 @@ Type "help" for available commands.
 * `Content-Security-Policy` 只允许同源脚本、样式、字体和图片；
 * 页面中不使用内联脚本和内联样式（JSON-LD 数据块除外，它不会被执行）。
 
+缓存：JS 和 CSS 使用 Pages 默认的 `public, max-age=0, must-revalidate`，每次通过 ETag 校验，发版后立即生效。Cloudflare 域名设置中的 Browser Cache TTL 必须为 “Respect Existing Headers”，否则浏览器可能继续使用旧版 JS。
+
 ## 12.5 本地存储
 
 * 配色选择保存在 `localStorage`，由 `theme-init.js` 在首次绘制前应用，避免刷新时闪现默认配色；
