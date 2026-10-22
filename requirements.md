@@ -119,18 +119,17 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 +--------------------------------------------------------------+
 | LOOKO OS 1.0 (tty1)                                          |
 | Initializing... ok                                           |
-| Mounting 5 routes... ok                                      |
+| Mounting 4 routes... ok                                      |
 | Ready.                                                       |
 |                                                              |
 | PROJECTS                                                     |
-|   [1] the-moss    [2] terra-echo  [3] steamtower             |
-|   [4] github      [5] blog                                   |
+|   [1] the-moss    [2] terra-echo  [3] github      [4] blog   |
 |                                                              |
 | Type "help" for commands, or click a project.                |
 |                                                              |
 | looko@home:~$ █                                              |
 |                                                              |
-|██ LOOKO-TTY1 │ 5 routes │ ↑↓ history  Tab complete │ 22:14 ██|
+|██ LOOKO-TTY1 │ 4 routes │ ↑↓ history  Tab complete │ 22:14 ██|
 +--------------------------------------------------------------+
 ```
 
@@ -149,7 +148,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 区域 | 内容 |
 | --- | --- |
 | 左 | `LOOKO-TTY1` |
-| 中 | 项目数量，如 `5 routes`；跳转时显示 `OPENING <name>` |
+| 中 | 项目数量，如 `4 routes`；跳转时显示 `OPENING <name>` |
 | 中 | 快捷键提示 `↑↓ history  Tab complete`（窄屏隐藏） |
 | 右 | 当前时间 `HH:MM` |
 
@@ -163,9 +162,8 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | --- | --- | --- | --- | --- |
 | 1 | `the-moss` | `moss` | `https://moss.lookoutldz.top/` | `/the-moss`、`/moss` |
 | 2 | `terra-echo` | `terraecho` | `https://terraecho.top/` | `/terra-echo`、`/terraecho` |
-| 3 | `steamtower` | | `https://steamtower.top/` | `/steamtower` |
-| 4 | `github` | `gh` | `https://github.com/lookoutldz/` | `/github`、`/gh` |
-| 5 | `blog` | `juejin` | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
+| 3 | `github` | `gh` | `https://github.com/lookoutldz/` | `/github`、`/gh` |
+| 4 | `blog` | `juejin` | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
 
 项目在终端中显示为 `[序号] 名称`，例如 `[1] the-moss`。
 
@@ -258,11 +256,11 @@ Opening the-moss...
 ```text
 looko@home:~$ open
 usage: open <target>
-targets: 1-5, the-moss, terra-echo, steamtower, github, blog
+targets: 1-4, the-moss, terra-echo, github, blog
 
 looko@home:~$ open foo
  ERR  open: no such target: foo
-targets: 1-5, the-moss, terra-echo, steamtower, github, blog
+targets: 1-4, the-moss, terra-echo, github, blog
 ```
 
 `about` 输出：

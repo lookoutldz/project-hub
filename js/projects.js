@@ -13,18 +13,12 @@ export const PROJECTS = [
   },
   {
     index: 3,
-    name: "steamtower",
-    aliases: [],
-    url: "https://steamtower.top/",
-  },
-  {
-    index: 4,
     name: "github",
     aliases: ["gh"],
     url: "https://github.com/lookoutldz/",
   },
   {
-    index: 5,
+    index: 4,
     name: "blog",
     aliases: ["juejin"],
     url: "https://juejin.cn/user/4341288062690398",

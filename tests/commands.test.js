@@ -45,7 +45,8 @@ test("findProject resolves index, name and alias case-insensitively", () => {
   assert.equal(findProject("1").name, "the-moss");
   assert.equal(findProject("MOSS").name, "the-moss");
   assert.equal(findProject("gh").name, "github");
-  assert.equal(findProject("6"), undefined);
+  assert.equal(findProject("5"), undefined);
+  assert.equal(findProject("steamtower"), undefined);
   assert.equal(findProject(""), undefined);
 });
 
@@ -70,7 +71,7 @@ test("ls prints the project list and ls -l prints one linked row per project", a
   assert.equal(long.calls.lines.length, PROJECTS.length + 1);
   const link = long.calls.lines[1].find((segment) => segment.href);
   assert.deepEqual(link, { text: "the-moss", href: PROJECTS[0].url, target: "the-moss" });
-  assert.match(long.text()[5], /\[5\] blog\s+juejin\.cn\/user\/4341288062690398/);
+  assert.match(long.text()[4], /\[4\] blog\s+juejin\.cn\/user\/4341288062690398/);
 });
 
 test("ls rejects unknown options", async () => {
@@ -93,7 +94,7 @@ test("open without a target prints usage and does not navigate", async () => {
   await execute(ctx, "open");
   assert.deepEqual(text(), [
     "usage: open <target>",
-    "targets: 1-5, the-moss, terra-echo, steamtower, github, blog",
+    "targets: 1-4, the-moss, terra-echo, github, blog",
   ]);
   assert.deepEqual(calls.navigated, []);
 });
