@@ -352,8 +352,8 @@ Type "help" for available commands.
 * 不执行 JS 时：首屏启动信息与项目链接完整可见、可点击，只是没有提示符和命令交互；
 * 首屏链接是真实 `<a href>`，搜索引擎可以抓取；
 * JS 执行失败时，首屏内容在约 2 秒后自动显示，不会一直空白；
-* 保留现有 meta、Open Graph、Twitter Card、JSON-LD、`robots.txt`、`sitemap.xml`；
-* 社交分享图使用独立的 1200×630 `assets/og.png`。
+* 保留 meta、Open Graph、Twitter Card、JSON-LD、`robots.txt`、`sitemap.xml`；meta 描述只概括站点，不列举具体项目；
+* 社交分享图使用独立的 1200×630 `assets/og.png`，内容不包含具体项目，增删项目时无需重做。
 
 ---
 
