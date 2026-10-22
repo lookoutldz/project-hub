@@ -179,6 +179,45 @@ const tree = (ctx) => {
   ctx.print(dim(`${PROJECTS.length} links`));
 };
 
+// sl: the classic punishment for typing `sl` instead of `ls`. Our own train, not the original art.
+const SL_FRAME_DELAY = 50;
+const SL_STEP = 2;
+const SMOKE = [
+  ["          (  )   ( )    (    )", "      (  )", "     ( )"],
+  ["           ( )    (  )     (  )", "       ( )", "     (  )"],
+];
+const TRAIN_BODY = [
+  "     ====",
+  ` ____|  |${"_".repeat(16)}   ${"_".repeat(14)}`,
+  ` |   |  |   LOOKO        | |${" ".repeat(14)}|`,
+  " |   |__|   EXPRESS      |=|   ~ home ~   |",
+  ` |${"_".repeat(23)}| |${"_".repeat(14)}|`,
+];
+const WHEELS = ["   (+)   (+)      (+)        (+)      (+)", "   (x)   (x)      (x)        (x)      (x)"];
+
+export const trainFrame = (step) => [...SMOKE[step % 2], ...TRAIN_BODY, WHEELS[step % 2]];
+
+/** Places a line `offset` columns from the left edge, clipped to the screen on both sides. */
+const shiftLine = (line, offset, columns) =>
+  (offset >= 0 ? " ".repeat(offset) + line : line.slice(-offset)).slice(0, columns).trimEnd();
+
+const sl = async (ctx) => {
+  if (ctx.reducedMotion) {
+    trainFrame(0).forEach((line) => ctx.print(line));
+    return;
+  }
+
+  // Runs to the end on purpose: like the original, Ctrl+C can't stop it.
+  const { columns } = ctx.env;
+  const width = Math.max(...trainFrame(0).map((line) => line.length));
+  const block = ctx.printBlock([]);
+  for (let offset = columns, step = 0; offset > -width; offset -= SL_STEP, step += 1) {
+    block.update(trainFrame(step).map((line) => shiftLine(line, offset, columns)));
+    await ctx.sleep(SL_FRAME_DELAY);
+  }
+  block.remove();
+};
+
 const changeDirectory = (ctx, args) => {
   const [target] = args;
   if (!target || HOME_PATHS.has(target)) {
@@ -436,6 +475,11 @@ export const COMMANDS = [
     name: "tree",
     hidden: true,
     run: tree,
+  },
+  {
+    name: "sl",
+    hidden: true,
+    run: sl,
   },
   {
     name: "cd",

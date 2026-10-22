@@ -153,7 +153,12 @@ const boot = async ({ animate }) => {
 const ctx = {
   print: (line, options) => terminal.print(line, options),
   printProjects: (projects) => terminal.printProjects(projects),
+  printBlock: (lines) => terminal.printBlock(lines),
   clear: () => terminal.clear(),
+  sleep: wait,
+  get reducedMotion() {
+    return reducedMotion.matches;
+  },
   get history() {
     return state.history;
   },

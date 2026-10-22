@@ -133,6 +133,11 @@ body {
   min-height: calc(var(--line-height) * 1em);
 }
 
+.line--block {
+  overflow: hidden;
+  white-space: pre;
+}
+
 .line--hang {
   padding-left: var(--hang);
   text-indent: calc(-1 * var(--hang));

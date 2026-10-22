@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 
-import { COMMANDS, execute } from "../js/commands.js";
+import { COMMANDS, execute, trainFrame } from "../js/commands.js";
 import { PROJECTS, findProject } from "../js/projects.js";
 
 const lineText = (line) =>
@@ -10,13 +10,30 @@ const lineText = (line) =>
     .join("");
 
 const createCtx = (overrides = {}) => {
-  const calls = { lines: [], projects: [], navigated: [], cleared: 0, rebooted: 0, theme: "amber" };
+  const calls = {
+    lines: [],
+    projects: [],
+    navigated: [],
+    cleared: 0,
+    rebooted: 0,
+    theme: "amber",
+    frames: [],
+    blockRemoved: false,
+  };
   const ctx = {
     print: (line = "") => calls.lines.push(line),
     printProjects: (projects) => calls.projects.push(projects),
+    printBlock: () => ({
+      update: (lines) => calls.frames.push(lines),
+      remove: () => {
+        calls.blockRemoved = true;
+      },
+    }),
     clear: () => {
       calls.cleared += 1;
     },
+    sleep: async () => {},
+    reducedMotion: false,
     history: ["ls", "history"],
     getTheme: () => calls.theme,
     setTheme: (theme) => {
@@ -316,6 +333,28 @@ test("which resolves commands and aliases", async () => {
   const empty = createCtx();
   await execute(empty.ctx, "which");
   assert.deepEqual(empty.text(), ["usage: which <command>"]);
+});
+
+test("sl drives the train from the right edge until it has fully left the screen", async () => {
+  const { ctx, calls } = createCtx({ env: { columns: 60, rows: 30 } });
+  await execute(ctx, "sl");
+
+  const width = Math.max(...trainFrame(0).map((line) => line.length));
+  const [first] = calls.frames;
+  const last = calls.frames.at(-1);
+  assert.equal(calls.frames.length, Math.ceil((60 + width) / 2));
+  assert.ok(first.every((line) => line === ""), "starts just off the right edge");
+  assert.ok(last.some((line) => line.trim()), "last frame still shows the tail");
+  assert.ok(calls.frames.every((frame) => frame.every((line) => line.length <= 60)), "never wider than the screen");
+  assert.notDeepEqual(calls.frames[10], calls.frames[11], "smoke and wheels alternate");
+  assert.equal(calls.blockRemoved, true);
+});
+
+test("sl prints one still frame when motion is reduced", async () => {
+  const { ctx, calls, text } = createCtx({ reducedMotion: true });
+  await execute(ctx, "sl");
+  assert.deepEqual(text(), trainFrame(0));
+  assert.deepEqual(calls.frames, []);
 });
 
 test("fastfetch puts info beside the art when wide and below it when narrow", async () => {

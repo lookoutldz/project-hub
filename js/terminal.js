@@ -78,6 +78,21 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
     return append(line);
   };
 
+  /** A fixed block of unwrapped lines that can be redrawn in place, for animations. */
+  const printBlock = (lines) => {
+    const element = document.createElement("div");
+    element.className = "line line--block";
+    element.textContent = lines.join("\n");
+    append(element);
+    return {
+      update: (next) => {
+        element.textContent = next.join("\n");
+        scrollToBottom();
+      },
+      remove: () => element.remove(),
+    };
+  };
+
   const clear = () => {
     output.replaceChildren();
     scrollToBottom();
@@ -123,6 +138,7 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
   return {
     print,
     printProjects,
+    printBlock,
     echo,
     clear,
     renderInput,
