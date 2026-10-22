@@ -407,6 +407,8 @@ Type "help" for available commands.
 ├── robots.txt
 ├── sitemap.xml
 ├── requirements.md
+├── README.md           # 项目说明：运行、测试、增删项目、部署
+├── LICENSE             # 代码使用 MIT；个人内容与字体除外
 ├── .github/workflows/  # CI：推送和 PR 时运行测试
 ├── assets/
 │   ├── fonts/          # IBM Plex Mono woff2（拉丁子集）
