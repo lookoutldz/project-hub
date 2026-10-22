@@ -246,6 +246,7 @@ body {
     grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
     column-gap: 3ch;
     max-width: 172ch;
+    margin-top: calc(var(--line-height) * 1em);
     row-gap: calc(var(--line-height) * 1em);
   }
 
