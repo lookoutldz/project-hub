@@ -225,9 +225,10 @@ const typeCommand = async (command) => {
     return;
   }
 
-  setInput("");
-  for (const char of command) {
-    setInput(input.value + char);
+  // Builds from `command` alone, so keys pressed meanwhile can't get mixed into it.
+  const chars = [...command];
+  for (let count = 1; count <= chars.length; count += 1) {
+    setInput(chars.slice(0, count).join(""));
     terminal.markTyping();
     await wait(TYPE_DELAY);
   }
@@ -356,9 +357,10 @@ output.addEventListener("click", async (event) => {
     return;
   }
 
+  const command = `open ${project.name}`;
   state.locked = true;
-  await typeCommand(`open ${project.name}`);
-  await run(input.value);
+  await typeCommand(command);
+  await run(command);
 });
 
 // Coming back from a project via the back button restores this page from bfcache.
@@ -397,7 +399,7 @@ const runQueryCommand = async () => {
 
   state.locked = true;
   await typeCommand(command);
-  await run(input.value);
+  await run(command);
 };
 
 const animateBoot = !reducedMotion.matches && !storage.get("sessionStorage", BOOTED_KEY);
