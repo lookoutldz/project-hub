@@ -55,6 +55,8 @@ const bootTemplate = [...output.children].map((node) => node.cloneNode(true));
 
 const state = {
   locked: true,
+  running: false,
+  queue: [],
   history: [],
   historyIndex: 0,
   draft: "",
@@ -187,6 +189,7 @@ const run = async (value) => {
   state.history.push(value);
   state.historyIndex = state.history.length;
   state.locked = true;
+  state.running = true;
   terminal.setPromptVisible(false);
 
   await wait(COMMAND_DELAY);
@@ -197,9 +200,15 @@ const run = async (value) => {
     terminal.print([{ text: " ERR ", tone: "inverse" }, " looko-sh: internal error"]);
   }
 
+  state.running = false;
   state.locked = false;
   terminal.setPromptVisible(true);
   terminal.renderInput();
+
+  // Lines entered while this command ran execute next, like terminal type-ahead.
+  if (state.queue.length) {
+    await run(state.queue.shift());
+  }
 };
 
 const typeCommand = async (command) => {
@@ -245,6 +254,11 @@ input.addEventListener("keydown", (event) => {
 
   if (event.key === "Enter" || event.key === "Tab") {
     event.preventDefault();
+  }
+  if (event.key === "Enter" && state.running) {
+    state.queue.push(input.value);
+    setInput("");
+    return;
   }
   if (state.locked) {
     return;
