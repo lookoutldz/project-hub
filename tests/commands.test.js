@@ -80,10 +80,40 @@ test("every project has a short one-line summary", () => {
   });
 });
 
-test("ls rejects unknown options", async () => {
-  const { ctx, text } = createCtx();
-  await execute(ctx, "ls -a");
-  assert.deepEqual(text(), [" ERR  ls: invalid option: -a", "usage: ls [-l]"]);
+test("ls accepts combined and separate flags; -h changes nothing", async () => {
+  const outputs = [];
+  for (const input of ["ls -l", "ls -lh", "ls -h -l", "ll", "ll -h", "ls -l ~"]) {
+    const { ctx, text } = createCtx();
+    await execute(ctx, input);
+    outputs.push(text());
+  }
+  outputs.forEach((output) => assert.deepEqual(output, outputs[0]));
+});
+
+test("ls -a reveals the hidden files, in both short and long form", async () => {
+  const short = createCtx();
+  await execute(short.ctx, "la");
+  assert.deepEqual(short.text(), [".  ..  about.md  .plan"]);
+  assert.deepEqual(short.calls.projects, [PROJECTS]);
+
+  const long = createCtx();
+  await execute(long.ctx, "ls -lah");
+  assert.deepEqual(long.text().slice(0, 3), [
+    `total ${PROJECTS.length + 2}`,
+    "      about.md    about the author",
+    "      .plan       what's next, finger style",
+  ]);
+  assert.equal(long.calls.lines.length, PROJECTS.length + 3);
+});
+
+test("ls rejects unknown options and paths", async () => {
+  const option = createCtx();
+  await execute(option.ctx, "ls -lz");
+  assert.deepEqual(option.text(), [" ERR  ls: invalid option -- 'z'", "usage: ls [-lah]"]);
+
+  const path = createCtx();
+  await execute(path.ctx, "ls /etc");
+  assert.deepEqual(path.text(), [" ERR  ls: cannot access '/etc': No such file or directory"]);
 });
 
 test("open navigates by index, name or alias", async () => {
@@ -219,6 +249,73 @@ test("easter eggs", async () => {
     await execute(ctx, input);
     assert.deepEqual(text(), expected, input);
   }
+});
+
+test("cat reads the hidden .plan file", async () => {
+  const { ctx, text } = createCtx();
+  await execute(ctx, "cat .plan");
+  assert.equal(text()[0], "Plan:");
+  assert.equal(text().length, 4);
+});
+
+test("tree lists every project as a link to its address", async () => {
+  const { ctx, calls, text } = createCtx();
+  await execute(ctx, "tree");
+  assert.deepEqual(text(), [
+    "~",
+    "├── the-moss -> moss.lookoutldz.top",
+    "├── terra-echo -> terraecho.top",
+    "├── github -> github.com/lookoutldz",
+    "└── blog -> juejin.cn/user/4341288062690398",
+    "",
+    "4 links",
+  ]);
+  assert.deepEqual(calls.lines[1][1], { text: "the-moss", href: PROJECTS[0].url, target: "the-moss" });
+});
+
+test("cd stays home, points projects to open, and rejects everything else", async () => {
+  const cases = [
+    ["cd", []],
+    ["cd ~", []],
+    ["cd moss", ["cd: not a directory: moss", "try: open the-moss"]],
+    ["cd ..", ["cd: there is nowhere above home"]],
+    ["cd /tmp", ["cd: no such file or directory: /tmp"]],
+  ];
+  for (const [input, expected] of cases) {
+    const { ctx, text } = createCtx();
+    await execute(ctx, input);
+    assert.deepEqual(text(), expected, input);
+  }
+});
+
+test("uname prints requested fields in canonical order", async () => {
+  const cases = [
+    ["uname", ["LOOKO"]],
+    ["uname -a", ["LOOKO home 1.0 #1 Cloudflare Pages js LOOKO/OS"]],
+    ["uname -rs", ["LOOKO 1.0"]],
+    ["uname -x", [" ERR  uname: invalid option -- 'x'", "usage: uname [-asnrvmo]"]],
+  ];
+  for (const [input, expected] of cases) {
+    const { ctx, text } = createCtx();
+    await execute(ctx, input);
+    assert.deepEqual(text(), expected, input);
+  }
+});
+
+test("uptime reports the clock and how long the session has run", async () => {
+  const { ctx, text } = createCtx();
+  await execute(ctx, "uptime");
+  assert.deepEqual(text(), ["09:05:03 up 2 mins, 1 user, load average: 0.00, 0.00, 0.00"]);
+});
+
+test("which resolves commands and aliases", async () => {
+  const { ctx, text } = createCtx();
+  await execute(ctx, "which ls ll NEOFETCH vim");
+  assert.deepEqual(text(), ["/usr/bin/ls", "/usr/bin/ll", "/usr/bin/neofetch", "vim not found"]);
+
+  const empty = createCtx();
+  await execute(empty.ctx, "which");
+  assert.deepEqual(empty.text(), ["usage: which <command>"]);
 });
 
 test("fastfetch puts info beside the art when wide and below it when narrow", async () => {

@@ -65,6 +65,7 @@ test("open completes project names and aliases", () => {
 test("theme and man complete their arguments", () => {
   assert.deepEqual(complete("theme g", COMMANDS), { value: "theme green ", candidates: [] });
   assert.deepEqual(complete("man cl", COMMANDS), { value: "man clear ", candidates: [] });
+  assert.deepEqual(complete("cat .p", COMMANDS), { value: "cat .plan ", candidates: [] });
 });
 
 test("no completion for unknown commands, extra arguments or no matches", () => {

@@ -54,5 +54,7 @@ export const findShortLink = (slug, projects = PROJECTS) => {
   return projects.find((project) => project.name === key || project.aliases.includes(key));
 };
 
+export const displayUrl = (project) => project.url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+
 export const describeTargets = (projects = PROJECTS) =>
   `targets: 1-${projects.length}, ${projects.map((project) => project.name).join(", ")}`;

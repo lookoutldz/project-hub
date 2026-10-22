@@ -211,7 +211,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 * 空输入时按 Tab 列出公开命令；
 * 第一个词有前缀时补全命令名，匹配范围包括彩蛋命令（方便探索发现）；
-* `open`、`info`、`man`、`theme` 补全对应参数；
+* `open`、`info`、`man`、`theme`、`cat`、`cd`、`which` 补全对应参数；
 * 有唯一候选时直接补全；有多个候选时补全公共前缀，并以暗色列出候选。
 
 ## 6.5 点击导航
@@ -243,7 +243,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 命令 | 说明 |
 | --- | --- |
 | `help` | 列出公开命令及简介 |
-| `ls [-l]` | 列出项目；`-l` 显示序号、名称和简介 |
+| `ls [-lah]` | 列出项目；`-l` 显示序号、名称和简介，`-a` 额外显示隐藏文件，`-h` 为兼容习惯而接受、不改变输出；参数可合并（如 `-lah`） |
 | `open <target>` | 打开项目；`target` 可以是序号、名称或别名 |
 | `info <target>` | 显示项目详情：简介、地址、别名、短链 |
 | `about` | 介绍作者 |
@@ -294,7 +294,9 @@ Backend Developer / Full Stack Developer
 Building useful things.
 ```
 
-`cat about.md` 与 `about` 等价。
+家目录中有两个文件：`about.md`（与 `about` 等价）和隐藏文件 `.plan`，`ls -a` 可以看到它们，`cat` 可以读取。
+
+`ls` 的错误处理：未知选项输出 ` ERR  ls: invalid option -- 'x'` 和用法；`~`、`.` 等表示家目录的路径照常列出，其他路径输出 ` ERR  ls: cannot access '<path>': No such file or directory`。
 
 ## 7.2 彩蛋命令（不出现在 help 中）
 
@@ -308,7 +310,17 @@ Building useful things.
 | `sudo <any>` | `You are already root.` |
 | `rm -rf /` | `Nice try :)` |
 | `rm <其他>` | `rm: read-only file system` |
+| `cat about.md` / `cat .plan` | 输出对应文件内容 |
 | `cat <其他文件>` | `cat: <file>: No such file or directory` |
+| `ll` / `la` | 等同于 `ls -l` / `ls -a`，可再附加其他选项 |
+| `tree` | 以树状结构列出项目，项目名可点击，如 `├── the-moss -> moss.lookoutldz.top`，末尾显示 `4 links` |
+| `cd` / `cd ~` | 无输出（始终在家目录） |
+| `cd <项目>` | `cd: not a directory: <项目>`，并提示 `try: open <名称>` |
+| `cd ..` | `cd: there is nowhere above home` |
+| `cd <其他>` | `cd: no such file or directory: <路径>` |
+| `uname [-asnrvmo]` | 默认 `LOOKO`；`-a` 输出 `LOOKO home 1.0 #1 Cloudflare Pages js LOOKO/OS`；字段按固定顺序输出 |
+| `uptime` | `HH:MM:SS up <本次会话时长>, 1 user, load average: 0.00, 0.00, 0.00` |
+| `which <命令...>` | 存在的命令输出 `/usr/bin/<命令>`，不存在的输出 `<命令> not found` |
 | `exit` | 输出 `logout`，清屏并重新播放启动过程 |
 
 `fastfetch` 的信息栏包含：OS、Host、Kernel、Shell、Resolution（实际视口尺寸）、Theme、Font、Uptime（本次会话时长）、Routes、Locale（浏览器语言）。

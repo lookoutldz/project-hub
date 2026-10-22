@@ -1,4 +1,4 @@
-import { PROJECTS, SITE_HOST, describeTargets, findProject } from "./projects.js";
+import { PROJECTS, SITE_HOST, describeTargets, displayUrl, findProject, findShortLink } from "./projects.js";
 import { findCommand, parse } from "./shell.js";
 
 export const THEMES = ["amber", "green"];
@@ -64,6 +64,136 @@ const about = (ctx) => {
   ctx.print("Building useful things.");
 };
 
+// The only "files" in the home directory: `ls -a` reveals them and `cat` reads them.
+const FILES = [
+  { name: "about.md", summary: "about the author", read: about },
+  {
+    name: ".plan",
+    summary: "what's next, finger style",
+    read: (ctx) => {
+      ctx.print(bright("Plan:"));
+      ctx.print("  - keep the garden growing");
+      ctx.print("  - ship small things, often");
+      ctx.print("  - leave room for curiosity");
+    },
+  },
+];
+
+// Paths that all mean "the current directory", which is always home.
+const HOME_PATHS = new Set(["~", "~/", ".", "./", "/home/looko"]);
+
+/** Splits `-lah -l` style arguments into a set of single-letter flags and the remaining operands. */
+const parseFlags = (args) => {
+  const flags = new Set();
+  const operands = [];
+  args.forEach((arg) => {
+    if (arg.startsWith("-") && arg.length > 1) {
+      [...arg.slice(1)].forEach((flag) => flags.add(flag));
+    } else {
+      operands.push(arg);
+    }
+  });
+  return { flags, operands };
+};
+
+const NAME_COLUMN = 12;
+const LIST_HANG = 18;
+
+const list = (ctx, args) => {
+  const { flags, operands } = parseFlags(args);
+  const unknown = [...flags].find((flag) => !"lah".includes(flag));
+  if (unknown) {
+    ctx.print(error(`ls: invalid option -- '${unknown}'`));
+    ctx.print(dim("usage: ls [-lah]"));
+    return;
+  }
+  const missing = operands.find((operand) => !HOME_PATHS.has(operand));
+  if (missing) {
+    ctx.print(error(`ls: cannot access '${missing}': No such file or directory`));
+    return;
+  }
+
+  // -h (human-readable sizes) is accepted so `ls -lh` works from habit; there are no sizes to show.
+  const all = flags.has("a");
+  if (!flags.has("l")) {
+    if (all) {
+      ctx.print(dim([".", "..", ...FILES.map((file) => file.name)].join("  ")));
+    }
+    ctx.printProjects(PROJECTS);
+    return;
+  }
+
+  ctx.print(dim(`total ${PROJECTS.length + (all ? FILES.length : 0)}`));
+  if (all) {
+    FILES.forEach((file) => {
+      ctx.print(
+        [`      ${file.name.padEnd(NAME_COLUMN)}`, { text: file.summary, tone: "dim" }],
+        { hang: LIST_HANG }
+      );
+    });
+  }
+  PROJECTS.forEach((project) => {
+    ctx.print(
+      [
+        `  [${project.index}] `,
+        projectLink(project),
+        " ".repeat(Math.max(1, NAME_COLUMN - project.name.length)),
+        { text: project.summary, tone: "dim" },
+      ],
+      { hang: LIST_HANG }
+    );
+  });
+};
+
+const UNAME_FIELDS = [
+  ["s", "LOOKO"],
+  ["n", "home"],
+  ["r", "1.0"],
+  ["v", "#1 Cloudflare Pages"],
+  ["m", "js"],
+  ["o", "LOOKO/OS"],
+];
+
+const uname = (ctx, args) => {
+  const { flags } = parseFlags(args);
+  const known = new Set(["a", ...UNAME_FIELDS.map(([flag]) => flag)]);
+  const unknown = [...flags].find((flag) => !known.has(flag));
+  if (unknown) {
+    ctx.print(error(`uname: invalid option -- '${unknown}'`));
+    ctx.print(dim("usage: uname [-asnrvmo]"));
+    return;
+  }
+
+  // Fields always print in the canonical order, whatever order the flags came in.
+  const wanted = flags.has("a") ? UNAME_FIELDS : UNAME_FIELDS.filter(([flag]) => flags.has(flag));
+  ctx.print((wanted.length ? wanted : UNAME_FIELDS.slice(0, 1)).map(([, value]) => value).join(" "));
+};
+
+const tree = (ctx) => {
+  ctx.print("~");
+  PROJECTS.forEach((project, index) => {
+    const branch = index === PROJECTS.length - 1 ? "└── " : "├── ";
+    ctx.print([branch, projectLink(project), { text: ` -> ${displayUrl(project)}`, tone: "dim" }], { hang: 4 });
+  });
+  ctx.print("");
+  ctx.print(dim(`${PROJECTS.length} links`));
+};
+
+const changeDirectory = (ctx, args) => {
+  const [target] = args;
+  if (!target || HOME_PATHS.has(target)) {
+    return;
+  }
+
+  const project = findShortLink(target);
+  if (project) {
+    ctx.print(`cd: not a directory: ${target}`);
+    ctx.print(dim(`try: open ${project.name}`));
+    return;
+  }
+  ctx.print(target === ".." ? "cd: there is nowhere above home" : `cd: no such file or directory: ${target}`);
+};
+
 const fastfetch = (ctx) => {
   const { env } = ctx;
   const fields = [
@@ -122,31 +252,9 @@ export const COMMANDS = [
   },
   {
     name: "ls",
-    usage: "ls [-l]",
+    usage: "ls [-lah]",
     summary: "list projects",
-    run: (ctx, args) => {
-      if (!args.length) {
-        ctx.printProjects(PROJECTS);
-        return;
-      }
-      if (args.length === 1 && args[0] === "-l") {
-        ctx.print(dim(`total ${PROJECTS.length}`));
-        PROJECTS.forEach((project) => {
-          ctx.print(
-            [
-              `  [${project.index}] `,
-              projectLink(project),
-              " ".repeat(Math.max(1, 12 - project.name.length)),
-              { text: project.summary, tone: "dim" },
-            ],
-            { hang: 18 }
-          );
-        });
-        return;
-      }
-      ctx.print(error(`ls: invalid option: ${args.join(" ")}`));
-      ctx.print(dim("usage: ls [-l]"));
-    },
+    run: list,
   },
   {
     name: "open",
@@ -300,16 +408,68 @@ export const COMMANDS = [
   {
     name: "cat",
     hidden: true,
+    complete: () => FILES.map((file) => file.name),
     run: (ctx, args) => {
       if (!args.length) {
         ctx.print("usage: cat <file>");
         return;
       }
-      if (args[0] === "about.md") {
-        about(ctx);
+      const file = FILES.find((entry) => entry.name === args[0]);
+      if (!file) {
+        ctx.print(`cat: ${args[0]}: No such file or directory`);
         return;
       }
-      ctx.print(`cat: ${args[0]}: No such file or directory`);
+      file.read(ctx);
+    },
+  },
+  {
+    name: "ll",
+    hidden: true,
+    run: (ctx, args) => list(ctx, ["-l", ...args]),
+  },
+  {
+    name: "la",
+    hidden: true,
+    run: (ctx, args) => list(ctx, ["-a", ...args]),
+  },
+  {
+    name: "tree",
+    hidden: true,
+    run: tree,
+  },
+  {
+    name: "cd",
+    hidden: true,
+    complete: projectTargets,
+    run: changeDirectory,
+  },
+  {
+    name: "uname",
+    hidden: true,
+    run: uname,
+  },
+  {
+    name: "uptime",
+    hidden: true,
+    run: (ctx) => {
+      const now = ctx.now();
+      const clock = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+      ctx.print(`${clock} up ${formatUptime(ctx.env.uptimeMs)}, 1 user, load average: 0.00, 0.00, 0.00`);
+    },
+  },
+  {
+    name: "which",
+    hidden: true,
+    complete: () => COMMANDS.flatMap((command) => [command.name, ...(command.aliases ?? [])]),
+    run: (ctx, args) => {
+      if (!args.length) {
+        ctx.print("usage: which <command>");
+        return;
+      }
+      args.forEach((arg) => {
+        const name = arg.toLowerCase();
+        ctx.print(findCommand(COMMANDS, name) ? `/usr/bin/${name}` : `${arg} not found`);
+      });
     },
   },
   {
