@@ -122,23 +122,6 @@ body {
   scrollbar-color: var(--fg-dim) transparent;
 }
 
-/* Hidden until JS takes over; revealed anyway if JS never runs (see noscript.css). */
-.output {
-  visibility: hidden;
-  animation: reveal 0s 2s forwards;
-}
-
-.js-ready .output {
-  visibility: visible;
-  animation: none;
-}
-
-@keyframes reveal {
-  to {
-    visibility: visible;
-  }
-}
-
 .line,
 .ps1,
 .typed {

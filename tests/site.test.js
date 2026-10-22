@@ -9,19 +9,13 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 const request = (name) => onRequestGet({ params: { name }, next: () => "static" });
 
-// projects.js is the single source of truth; the static HTML must match it.
-test("index.html lists every project as a real link in order", async () => {
+// js/projects.js is the only place projects are defined; the page must not repeat them.
+test("index.html does not hardcode the project list", async () => {
   const html = await read("index.html");
-  const links = [...html.matchAll(/<a class="link" href="([^"]+)" data-target="([^"]+)">\[(\d+)\] ([^<]+)<\/a>/g)].map(
-    ([, href, target, index, name]) => ({ href, target, index: Number(index), name })
-  );
-
-  assert.deepEqual(
-    links,
-    PROJECTS.map((project) => ({ href: project.url, target: project.name, index: project.index, name: project.name }))
-  );
-  assert.match(html, new RegExp(`Mounting ${PROJECTS.length} routes`));
-  assert.match(html, new RegExp(`>${PROJECTS.length} routes<`));
+  assert.doesNotMatch(html, /data-target=|class="link"|routes/);
+  PROJECTS.forEach((project) => {
+    assert.ok(!html.includes(`[${project.index}] ${project.name}`), project.name);
+  });
 });
 
 test("every project name and alias is a 302 short link to the project", () => {

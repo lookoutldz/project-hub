@@ -156,7 +156,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 # 5. 项目数据
 
-所有项目定义在 `js/projects.js` 中，是唯一数据来源。首屏 HTML、`ls`、`open`、`info`、补全、短链都与它保持一致。
+所有项目定义在 `js/projects.js` 中，是唯一数据来源。启动画面、`ls`、`open`、`info`、补全、短链都直接读取它。
 
 | 序号 | 名称 | 别名 | 简介 | 地址 | 短链 |
 | --- | --- | --- | --- | --- | --- |
@@ -169,7 +169,12 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 项目在终端中显示为 `[序号] 名称`，例如 `[1] the-moss`。
 
-每个名称和别名都由 Pages Function 自动提供短链，只按名称和别名匹配，不按序号匹配。新增或修改项目时，需要同步更新 `js/projects.js` 和 `index.html` 首屏列表；`tests/site.test.js` 会校验两者一致。
+新增、修改或下架项目时，只需修改 `js/projects.js` 这一个文件：
+
+* 启动画面的项目列表、`Mounting N routes`、状态栏的项目数量都由 JS 从它生成；
+* 短链由 Pages Function `functions/[name].js` 读取同一份数据，每个名称和别名自动成为短链；
+* 短链只按名称和别名匹配，不按序号匹配，项目重新排序后已分享的短链不会指向别的项目；
+* `index.html`、meta 描述和分享图不包含具体项目，`tests/site.test.js` 会校验 `index.html` 中没有写死项目列表。
 
 ---
 
@@ -177,8 +182,8 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 
 ## 6.1 启动
 
-* 首屏的启动信息、项目列表和提示语直接写在 `index.html` 中；
-* JS 加载后以逐行输出的方式重放这些内容（每行约 120ms），然后显示提示符；
+* 启动信息、项目列表和提示语由 JS 根据 `js/projects.js` 输出，`index.html` 中不写死；
+* 以逐行输出的方式显示这些内容（每行约 120ms），然后显示提示符；
 * 同一浏览器会话内再次访问时跳过启动动画；
 * 启动过程中按任意键或点击屏幕可立即跳过；
 * 开启“减少动态效果”（`prefers-reduced-motion: reduce`）时不播放启动动画。
@@ -349,9 +354,8 @@ Type "help" for available commands.
 
 # 10. 渐进增强与 SEO
 
-* 不执行 JS 时：首屏启动信息与项目链接完整可见、可点击，只是没有提示符和命令交互；
-* 首屏链接是真实 `<a href>`，搜索引擎可以抓取；
-* JS 执行失败时，首屏内容在约 2 秒后自动显示，不会一直空白；
+* 为保证项目数据只有一处来源，`index.html` 不包含项目列表；不执行 JS 时，屏幕上提示 `This terminal needs JavaScript to run.`；
+* 项目链接在 JS 生成后仍是真实 `<a href>`，能执行 JS 的搜索引擎可以抓取；
 * 保留 meta、Open Graph、Twitter Card、JSON-LD、`robots.txt`、`sitemap.xml`；meta 描述只概括站点，不列举具体项目；
 * 社交分享图使用独立的 1200×630 `assets/og.png`，内容不包含具体项目，增删项目时无需重做。
 
@@ -372,7 +376,7 @@ Type "help" for available commands.
 
 ```text
 /
-├── index.html          # 页面结构与首屏静态输出
+├── index.html          # 页面结构（不含项目数据）
 ├── _headers            # 响应头：缓存与 CSP
 ├── functions/
 │   └── [name].js       # Pages Function：按 projects.js 处理短链
@@ -386,15 +390,14 @@ Type "help" for available commands.
 │   ├── apple-touch-icon.png
 │   └── og.png
 ├── css/
-│   ├── style.css
-│   └── noscript.css    # 无 JS 时显示首屏内容
+│   └── style.css
 ├── js/
 │   ├── theme-init.js   # 在 <head> 中提前应用已保存的配色
 │   ├── main.js         # 入口：启动、事件绑定
 │   ├── terminal.js     # 输出渲染、输入层、光标、滚动
 │   ├── shell.js        # 分词、解析、目标匹配、补全（纯函数）
 │   ├── commands.js     # 命令注册表
-│   └── projects.js     # 项目数据
+│   └── projects.js     # 项目数据：唯一需要修改的地方
 └── tests/              # node --test，无需依赖
 ```
 

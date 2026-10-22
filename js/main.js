@@ -51,8 +51,6 @@ const terminal = createTerminal({
   after: document.getElementById("typed-after"),
 });
 
-const bootTemplate = [...output.children].map((node) => node.cloneNode(true));
-
 const state = {
   locked: true,
   running: false,
@@ -116,17 +114,30 @@ const revealGradually = async (nodes) => {
   window.removeEventListener("pointerdown", skip, { capture: true });
 };
 
-const boot = async (nodes, { animate }) => {
+// The boot screen, project list included, is printed from PROJECTS so projects.js is the only place to edit.
+const printBootScreen = () => [
+  terminal.print([{ text: "LOOKO OS 1.0 (tty1)", tone: "bright" }]),
+  terminal.print([{ text: "Initializing... ok", tone: "dim" }]),
+  terminal.print([{ text: `Mounting ${PROJECTS.length} routes... ok`, tone: "dim" }]),
+  terminal.print("Ready."),
+  terminal.print(""),
+  terminal.print([{ text: "PROJECTS", tone: "bright" }]),
+  terminal.printProjects(PROJECTS),
+  terminal.print(""),
+  terminal.print([{ text: 'Type "help" for commands, or click a project.', tone: "dim" }]),
+];
+
+const boot = async ({ animate }) => {
   state.locked = true;
   prompt.hidden = true;
 
+  terminal.clear();
+  const nodes = printBootScreen();
   if (animate) {
+    // Hidden in the same task they were printed in, so the full screen never flashes.
     nodes.forEach((node) => {
       node.hidden = true;
     });
-  }
-  root.classList.add("js-ready");
-  if (animate) {
     await revealGradually(nodes);
   }
 
@@ -169,10 +180,7 @@ const ctx = {
   },
   reboot: async () => {
     await wait(400);
-    terminal.clear();
-    const nodes = bootTemplate.map((node) => node.cloneNode(true));
-    output.append(...nodes);
-    await boot(nodes, { animate: !reducedMotion.matches });
+    await boot({ animate: !reducedMotion.matches });
   },
 };
 
@@ -394,4 +402,4 @@ const runQueryCommand = async () => {
 
 const animateBoot = !reducedMotion.matches && !storage.get("sessionStorage", BOOTED_KEY);
 storage.set("sessionStorage", BOOTED_KEY, "1");
-boot([...output.children], { animate: animateBoot }).then(runQueryCommand);
+boot({ animate: animateBoot }).then(runQueryCommand);
