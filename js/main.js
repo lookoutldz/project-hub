@@ -127,6 +127,7 @@ const printBootScreen = () => [
   terminal.printProjects(PROJECTS, { gallery: true }),
   terminal.print(""),
   terminal.print([{ text: 'Type "help" for commands, or click a project.', tone: "dim" }]),
+  terminal.print(""),
 ];
 
 const boot = async ({ animate }) => {
