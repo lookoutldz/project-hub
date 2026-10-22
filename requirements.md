@@ -123,7 +123,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | Ready.                                                       |
 |                                                              |
 | PROJECTS                                                     |
-|   [1] the-moss    [2] arkvoice    [3] steamtower             |
+|   [1] the-moss    [2] terra-echo  [3] steamtower             |
 |   [4] github      [5] blog                                   |
 |                                                              |
 | Type "help" for commands, or click a project.                |
@@ -162,7 +162,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 序号 | 名称 | 别名 | 地址 | 短链 |
 | --- | --- | --- | --- | --- |
 | 1 | `the-moss` | `moss` | `https://moss.lookoutldz.top/` | `/the-moss`、`/moss` |
-| 2 | `arkvoice` | | `https://arkvoice.top/` | `/arkvoice` |
+| 2 | `terra-echo` | `terraecho` | `https://terraecho.top/` | `/terra-echo`、`/terraecho` |
 | 3 | `steamtower` | | `https://steamtower.top/` | `/steamtower` |
 | 4 | `github` | `gh` | `https://github.com/lookoutldz/` | `/github`、`/gh` |
 | 5 | `blog` | `juejin` | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
@@ -251,11 +251,11 @@ Opening the-moss...
 ```text
 looko@home:~$ open
 usage: open <target>
-targets: 1-5, the-moss, arkvoice, steamtower, github, blog
+targets: 1-5, the-moss, terra-echo, steamtower, github, blog
 
 looko@home:~$ open foo
  ERR  open: no such target: foo
-targets: 1-5, the-moss, arkvoice, steamtower, github, blog
+targets: 1-5, the-moss, terra-echo, steamtower, github, blog
 ```
 
 `about` 输出：

@@ -7,9 +7,9 @@ export const PROJECTS = [
   },
   {
     index: 2,
-    name: "arkvoice",
-    aliases: [],
-    url: "https://arkvoice.top/",
+    name: "terra-echo",
+    aliases: ["terraecho"],
+    url: "https://terraecho.top/",
   },
   {
     index: 3,

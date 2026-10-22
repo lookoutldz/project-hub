@@ -93,7 +93,7 @@ test("open without a target prints usage and does not navigate", async () => {
   await execute(ctx, "open");
   assert.deepEqual(text(), [
     "usage: open <target>",
-    "targets: 1-5, the-moss, arkvoice, steamtower, github, blog",
+    "targets: 1-5, the-moss, terra-echo, steamtower, github, blog",
   ]);
   assert.deepEqual(calls.navigated, []);
 });
