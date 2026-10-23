@@ -41,6 +41,14 @@ export const PROJECTS = [
     url: "https://arklite.lookoutldz.top/",
     thumb: "/assets/thumbs/arklite.webp",
   },
+  {
+    index: 6,
+    name: "byteriot",
+    aliases: ["riot"],
+    summary: "an independent game studio",
+    url: "https://byteriot.top/",
+    thumb: "/assets/thumbs/byteriot.webp",
+  },
 ];
 
 export const findProject = (query, projects = PROJECTS) => {
