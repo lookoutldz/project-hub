@@ -243,7 +243,7 @@ body {
 
 @media (min-width: 960px) and (min-height: 560px) {
   .projects--gallery {
-    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(22ch, 1fr));
     column-gap: 3ch;
     max-width: 172ch;
     margin-top: calc(var(--line-height) * 1em);

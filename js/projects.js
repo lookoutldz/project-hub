@@ -33,6 +33,14 @@ export const PROJECTS = [
     url: "https://juejin.cn/user/4341288062690398",
     thumb: "/assets/thumbs/blog.webp",
   },
+  {
+    index: 5,
+    name: "arklite",
+    aliases: ["ark"],
+    summary: "an Arknights-inspired online game",
+    url: "https://arklite.lookoutldz.top/",
+    thumb: "/assets/thumbs/arklite.webp",
+  },
 ];
 
 export const findProject = (query, projects = PROJECTS) => {

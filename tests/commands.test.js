@@ -92,7 +92,7 @@ test("findProject resolves index, name and alias case-insensitively", () => {
   assert.equal(findProject("1").name, "the-moss");
   assert.equal(findProject("MOSS").name, "the-moss");
   assert.equal(findProject("gh").name, "github");
-  assert.equal(findProject("5"), undefined);
+  assert.equal(findProject(String(PROJECTS.length + 1)), undefined);
   assert.equal(findProject("steamtower"), undefined);
   assert.equal(findProject(""), undefined);
 });
@@ -177,7 +177,7 @@ test("open without a target prints usage and does not navigate", async () => {
   await execute(ctx, "open");
   assert.deepEqual(text(), [
     "usage: open <target>",
-    "targets: 1-4, the-moss, terra-echo, github, blog",
+    "targets: 1-5, the-moss, terra-echo, github, blog, arklite",
   ]);
   assert.deepEqual(calls.navigated, []);
 });
@@ -326,9 +326,10 @@ test("tree lists every project as a link to its address", async () => {
     "├── the-moss -> moss.lookoutldz.top",
     "├── terra-echo -> terraecho.top",
     "├── github -> github.com/lookoutldz",
-    "└── blog -> juejin.cn/user/4341288062690398",
+    "├── blog -> juejin.cn/user/4341288062690398",
+    "└── arklite -> arklite.lookoutldz.top",
     "",
-    "4 links",
+    "5 links",
   ]);
   assert.deepEqual(calls.lines[1][1], { text: "the-moss", href: PROJECTS[0].url, target: "the-moss" });
 });
