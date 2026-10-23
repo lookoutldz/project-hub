@@ -235,7 +235,8 @@ body {
 /*
   Boot-screen gallery: on wide screens each project is a dimmed screenshot card that lights up
   on hover or focus, and only its label turns inverse. Narrow screens hide the screenshot
-  and keep the plain text list.
+  and keep the plain text list. terminal.js sets --columns so cards that do not fit
+  in one row split into even rows; until then the grid fits as many as it can.
 */
 .card .thumb {
   display: none;
@@ -243,11 +244,16 @@ body {
 
 @media (min-width: 960px) and (min-height: 560px) {
   .projects--gallery {
-    grid-template-columns: repeat(auto-fit, minmax(22ch, 1fr));
+    --card-width: 22ch;
+    grid-template-columns: repeat(var(--columns, auto-fit), minmax(var(--card-width), 30ch));
     column-gap: 3ch;
     max-width: 172ch;
     margin-top: calc(var(--line-height) * 1em);
     row-gap: calc(var(--line-height) * 1em);
+  }
+
+  .projects--gallery > li {
+    min-width: var(--card-width);
   }
 
   .card,

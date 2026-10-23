@@ -82,6 +82,30 @@ export const createProjectList = (projects, { gallery = false } = {}) => {
   return list;
 };
 
+/**
+ * Spreads gallery cards evenly over the fewest rows: when one row cannot hold them all,
+ * 6 cards become 3 + 3 rather than 5 + 1. Card width and gap come from style.css,
+ * which lays the gallery out only on wide screens; elsewhere this leaves it alone.
+ */
+const balanceGallery = (list) => {
+  const card = list.firstElementChild;
+  if (!card) {
+    return;
+  }
+  const style = getComputedStyle(list);
+  const cardWidth = parseFloat(getComputedStyle(card).minWidth);
+  const gap = parseFloat(style.columnGap);
+  const width = list.clientWidth - parseFloat(style.paddingLeft);
+  if (!(cardWidth > 0) || width <= 0) {
+    return;
+  }
+
+  const count = list.children.length;
+  const perRow = Math.max(1, Math.floor((width + gap) / (cardWidth + gap)));
+  const rows = Math.ceil(count / perRow);
+  list.style.setProperty("--columns", String(Math.ceil(count / rows)));
+};
+
 export const createTerminal = ({ screen, output, prompt, input, before, cursor, after }) => {
   let typingTimer;
 
@@ -97,7 +121,19 @@ export const createTerminal = ({ screen, output, prompt, input, before, cursor, 
 
   const print = (line = "", options) => append(createLine(line, options));
 
-  const printProjects = (projects, options) => append(createProjectList(projects, options));
+  // Only the latest gallery is on screen: `home` and reboots clear the old one first.
+  const galleryObserver = new ResizeObserver((entries) => {
+    entries.forEach((entry) => balanceGallery(entry.target));
+  });
+
+  const printProjects = (projects, options) => {
+    const list = append(createProjectList(projects, options));
+    if (options?.gallery) {
+      galleryObserver.disconnect();
+      galleryObserver.observe(list);
+    }
+    return list;
+  };
 
   /**
    * A screenshot linked like a project name; style.css draws it in the phosphor colour.
