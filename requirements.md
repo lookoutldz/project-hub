@@ -119,18 +119,18 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 +--------------------------------------------------------------+
 | LOOKO OS 1.0 (tty1)                                          |
 | Initializing... ok                                           |
-| Mounting 6 routes... ok                                      |
+| Mounting 7 routes... ok                                      |
 | Ready.                                                       |
 |                                                              |
 | PROJECTS                                                     |
 |   [1] the-moss    [2] terra-echo  [3] github      [4] blog   |
-|   [5] arklite     [6] byteriot                               |
+|   [5] arklite     [6] byteriot    [7] choicelab              |
 |                                                              |
 | Type "help" for commands, or click a project.                |
 |                                                              |
 | looko@home:~$ █                                              |
 |                                                              |
-|██ LOOKO-TTY1 │ 6 routes │ ↑↓ history  Tab complete │ 22:14 ██|
+|██ LOOKO-TTY1 │ 7 routes │ ↑↓ history  Tab complete │ 22:14 ██|
 +--------------------------------------------------------------+
 ```
 
@@ -164,7 +164,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 区域 | 内容 |
 | --- | --- |
 | 左 | `LOOKO-TTY1` |
-| 中 | 项目数量，如 `6 routes`；跳转时显示 `OPENING <name>` |
+| 中 | 项目数量，如 `7 routes`；跳转时显示 `OPENING <name>` |
 | 中 | 快捷键提示 `↑↓ history  Tab complete`（窄屏隐藏） |
 | 右 | 当前时间 `HH:MM` |
 
@@ -182,6 +182,7 @@ LOOKO Terminal 是 Looko 的个人导航主页，访问地址为 `https://lookou
 | 4 | `blog` | `juejin` | technical writing on Juejin | `https://juejin.cn/user/4341288062690398` | `/blog`、`/juejin` |
 | 5 | `arklite` | `ark` | an Arknights-inspired online game | `https://arklite.lookoutldz.top/` | `/arklite`、`/ark` |
 | 6 | `byteriot` | `riot` | an independent game studio | `https://byteriot.top/` | `/byteriot`、`/riot` |
+| 7 | `choicelab` | `choice` | a random picker for hard choices | `https://choicelab.lookoutldz.top/` | `/choicelab`、`/choice` |
 
 简介为英文短句，不超过 40 个字符，用于 `ls -l` 和 `info`。
 
@@ -309,11 +310,11 @@ looko@home:~$ info moss
 ```text
 looko@home:~$ open
 usage: open <target>
-targets: 1-6, the-moss, terra-echo, github, blog, arklite, byteriot
+targets: 1-7, the-moss, terra-echo, github, blog, arklite, byteriot, choicelab
 
 looko@home:~$ open foo
  ERR  open: no such target: foo
-targets: 1-6, the-moss, terra-echo, github, blog, arklite, byteriot
+targets: 1-7, the-moss, terra-echo, github, blog, arklite, byteriot, choicelab
 ```
 
 `about` 输出：
@@ -343,7 +344,7 @@ Building useful things.
 | `cat about.md` / `cat .plan` | 输出对应文件内容 |
 | `cat <其他文件>` | `cat: <file>: No such file or directory` |
 | `ll` / `la` | 等同于 `ls -l` / `ls -a`，可再附加其他选项 |
-| `tree` | 以树状结构列出项目，项目名可点击，如 `├── the-moss -> moss.lookoutldz.top`，末尾显示 `6 links` |
+| `tree` | 以树状结构列出项目，项目名可点击，如 `├── the-moss -> moss.lookoutldz.top`，末尾显示 `7 links` |
 | `cd` / `cd ~` | 无输出（始终在家目录） |
 | `cd <项目>` | `cd: not a directory: <项目>`，并提示 `try: open <名称>` |
 | `cd ..` | `cd: there is nowhere above home` |

@@ -49,6 +49,14 @@ export const PROJECTS = [
     url: "https://byteriot.top/",
     thumb: "/assets/thumbs/byteriot.webp",
   },
+  {
+    index: 7,
+    name: "choicelab",
+    aliases: ["choice"],
+    summary: "a random picker for hard choices",
+    url: "https://choicelab.lookoutldz.top/",
+    thumb: "/assets/thumbs/choicelab.webp",
+  },
 ];
 
 export const findProject = (query, projects = PROJECTS) => {
