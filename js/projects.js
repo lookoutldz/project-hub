@@ -35,14 +35,6 @@ export const PROJECTS = [
   },
   {
     index: 5,
-    name: "arklite",
-    aliases: ["ark"],
-    summary: "an Arknights-inspired online game",
-    url: "https://arklite.lookoutldz.top/",
-    thumb: "/assets/thumbs/arklite.webp",
-  },
-  {
-    index: 6,
     name: "byteriot",
     aliases: ["riot"],
     summary: "an independent game studio",
@@ -50,7 +42,7 @@ export const PROJECTS = [
     thumb: "/assets/thumbs/byteriot.webp",
   },
   {
-    index: 7,
+    index: 6,
     name: "choicelab",
     aliases: ["choice"],
     summary: "a random picker for hard choices",

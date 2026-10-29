@@ -177,7 +177,7 @@ test("open without a target prints usage and does not navigate", async () => {
   await execute(ctx, "open");
   assert.deepEqual(text(), [
     "usage: open <target>",
-    "targets: 1-7, the-moss, terra-echo, github, blog, arklite, byteriot, choicelab",
+    "targets: 1-6, the-moss, terra-echo, github, blog, byteriot, choicelab",
   ]);
   assert.deepEqual(calls.navigated, []);
 });
@@ -327,11 +327,10 @@ test("tree lists every project as a link to its address", async () => {
     "├── terra-echo -> terraecho.top",
     "├── github -> github.com/lookoutldz",
     "├── blog -> juejin.cn/user/4341288062690398",
-    "├── arklite -> arklite.lookoutldz.top",
     "├── byteriot -> byteriot.top",
     "└── choicelab -> choicelab.lookoutldz.top",
     "",
-    "7 links",
+    "6 links",
   ]);
   assert.deepEqual(calls.lines[1][1], { text: "the-moss", href: PROJECTS[0].url, target: "the-moss" });
 });
